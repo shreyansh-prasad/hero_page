@@ -1,0 +1,267 @@
+# Cosmic HUD Hover — Reverse-Engineering & Build Spec
+
+Source: `1786225979397_clideo_editor_....mp4` — 1280×720 canvas, pillarboxed vertical content at x:352–927 (≈575×720, ~4:5 aspect), 5.78s, 60fps, watermarked `clideo.com` (irrelevant to design — export artifact of the tool you used to clip it).
+
+---
+
+## 1. Clarifying Questions [Certain — these are real gaps, not filler]
+
+## 1. Clarifying Questions — RESOLVED
+
+You confirmed: entire hero, cursor-local, and gave me discretion on the rest. Final calls, as the acting UI/UX + interaction designer on this:
+
+| Open item | Decision | Reasoning |
+|---|---|---|
+| Surface | Full-bleed hero section | Per your instruction |
+| Reveal shape | Soft circular spotlight, ~260px diameter, ~50px feather | Matches the "lens/scanner" read better than a hard edge or a shard; hard edges fight the nebula's organic softness |
+| Idle motion outside mask | Subtle ambient drift on stars/nebula layer only (never the grid), Earth near-static | Fully static hero reads dead on a landing page; the source clip's own "always slightly alive" feel is worth keeping, just kept OFF the HUD system entirely, matching your "areas not hovered stay normal idle" rule |
+| Stack | Next.js/React/TypeScript/Tailwind. Pointer/mask tracking: raw refs + `requestAnimationFrame`, NOT a motion library — this is the performance-critical path. Framer Motion (already idiomatic in a Next stack) only for the low-frequency enter/exit fade on the mask container | Mixing a heavy animation library into a 60fps pointer loop is the single most common cause of jank in effects like this |
+| Mobile/touch | Tap reveals mask at tap point, holds 2.5s, auto fades — no persistent hover to fake | Flux is a PWA, mobile traffic is real, can't ship a hover-only effect |
+
+Sections 2-4 (frame-by-frame, motion logic, visual design) are unchanged from the original extraction — nothing since then has contradicted the footage, only added the spatial/cursor layer on top.
+
+---
+
+## 2. Frame-by-Frame Breakdown [Certain unless noted]
+
+58 frames sampled @10fps across 5.78s. Grouped by meaningful state change, not literal per-frame (per-frame would just repeat "label digits flickered").
+
+| Time | Frame# | Event |
+|---|---|---|
+| 0.0s | 1 | Grid **already fully active** — no draw-in visible. Core 2×2 cell cluster centered upper-middle of flower mass, one line extends right to a 3rd node labeled `3.027451`. |
+| 0.0–0.9s | 1–9 | Grid holds shape. Coordinate labels at every node **change value every single frame** — this is a hard-cut flicker, not an eased count-up. No easing curve is extractable because there's no interpolation between values. |
+| 0.9–1.6s | 9–17 | A new row of cells appears below the core cluster as bloom content shifts (footage change, not a "grid growing" tween — [Guessing] whether this is scripted growth or coincidental re-composition per loop). |
+| ~1.6–1.9s | 17–19 | **Scan-pulse event #1**: a diagonal line draws in *inside one grid cell*, corner-to-corner (bottom-left node → top-right node), bisecting the cell into two triangles. At frame 17 it's faint (~30% opacity, still forming); frame 19 it's fully solid. |
+| ~1.9–2.1s | 19–21 | The diagonal holds solid for ~2 frames (~0.2s), then begins fading to a dashed/dotted appearance — reads like a dissolve, not a wipe. |
+| ~2.3–2.5s | 23–25 | **Scan-pulse event #2**: the same diagonal-bisector behavior repeats in a *different, adjacent cell* — confirms this is a traveling "currently reading this cell" cursor, not a one-off. |
+| ~2.6s | 26–27 | Diagonal fully gone. Grid returns to pure rectilinear (no diagonals) until the next pulse. |
+| ~4.5s | 46 | **One label node briefly renders in a blue tint** instead of neutral white (`1.509804` at bottom-left of a mid cell) — single-frame accent-color flash on one data point, then reverts to white next frame. Only one such event observed in the whole clip. [Certain it happened once — Guessing whether it's periodic or random, sample too short to tell.] |
+| 0.0–5.78s | all | Underlying flower: static camera (no pan/zoom/dolly detected — a fixed-position bud near top-left holds screen position throughout), petals genuinely unfurl and deepen from pink toward saturated red as the time-lapse progresses. Heavy grain, blown/glowing highlight edges, particulate/dust sparkle on petal surfaces. |
+| 5.78s | 58 | Clip ends mid-state. Grid present, no fade, no reset. **No exit animation exists in this footage.** |
+
+**Explicitly unclear / not claiming:** I checked for left-right mirror symmetry in the flower content (would explain the oddly balanced compositions in some frames) using a flip-diff test — result was ambiguous (moderate but non-zero difference, mostly explained by shared black background). I am **not** asserting the footage is mirrored/kaleidoscoped. Treat any "symmetry" you perceive as a property of this specific flower's structure, not a technique to replicate.
+
+---
+
+## 3. Motion Logic [Certain]
+
+- **What moves first:** nothing "enters" — the grid is present at t=0. There is no observable hierarchy of "background loads, then grid draws in." This is the biggest constraint on your rebuild: **you have no reference for hover-enter.**
+- **What's continuous vs. discrete:**
+  - Continuous/ambient: label-digit flicker (every frame, no easing), organic bloom growth (real footage, not something you animate).
+  - Discrete/event-driven: the diagonal scan-pulse (cell-to-cell), the single blue accent flash.
+- **How the scan-pulse builds and settles:** draw-in fast (~2 frames / ~0.15-0.2s to full opacity) → hold solid (~2 frames) → dissolve to dashed/faint (~2-3 frames) → gone. Total lifecycle per pulse ≈ 0.4-0.6s. Then it re-fires in an adjacent cell roughly 0.6-0.9s later. Two data points isn't enough to certify a fixed interval — [Guessing] on exact periodicity, but the *pattern* (travels cell-to-cell, doesn't repeat same cell twice in a row) is solid.
+- **Hover enter/hold/exit — none of this exists in source.** Any interaction-state design for these is by definition `[Designed]`, covered in section 6.
+
+---
+
+## 4. Visual Design Breakdown [Certain unless noted]
+
+| Property | Observation |
+|---|---|
+| Line color | Near-white / neutral gray, high brightness, no visible hue shift over petals — reads as flat-opaque overlay, not additive/screen blend [Likely, not confirmed via compositing test]. |
+| Line weight | Thin, ~1-2px equivalent at this resolution, soft/anti-aliased edge, no hard drop shadow. |
+| Nodes | Small solid square/dot markers (~4-6px) at every line intersection. |
+| Labels | Tiny monospace/tabular-number font, white, positioned bottom-left inside each cell near its corner node. Format: `N.NNNNNNN` (1 leading digit, decimal, 6-7 fractional digits) — reads as sensor/confidence-score noise, not meaningful data. |
+| Grid topology | Rectilinear, non-uniform cell sizing (not a strict evenly-spaced grid — cells vary because they're keyed to composition, not a fixed math grid). |
+| Scan-pulse accent | Diagonal corner-to-corner bisector inside one cell at a time, same line weight as base grid, no color shift except the one blue flash noted above. |
+| Subject texture | Heavy grain, blown-highlight glow on petal edges, glittery/dust particulate scattered on petal surfaces — this specific texture quality (grainy + sparkly + glowing edges) is the part that translates *beautifully* to a stardust/nebula aesthetic. |
+| Background | Pure/near-black, no gradient detected. |
+| Camera | Static. No zoom, no pan, no parallax in source. |
+
+**Reference image (Earth + nebula) read:** Earth cropped at bottom third of frame, dayside visible (no city lights), cloud swirl detail, dark ocean/landmass contrast, black vignette cutting the globe off at frame bottom, scattered stars of varying size/brightness, teal-to-yellow-green nebula wisps filling the upper two-thirds. This is your base plate — high production value already, don't fight it with too much overlay noise.
+
+---
+
+## 5. Interaction Analysis — Cursor-Localized Model [Mixed — marked per line]
+
+Your instruction is explicit: the animation activates only in the region under the cursor; everything else stays idle. Source footage has zero cursor mechanics, so the *spatial* mechanics below are entirely `[Designed]`. The *content* that appears inside the revealed region (grid behavior, flicker, scan-pulse) is `[Certain, extracted]` — same rules as section 3/4, just now windowed through a mask instead of covering the whole plate.
+
+- **Idle state** `[Certain, per your instruction]`: base Earth/nebula plate visible everywhere, no grid anywhere, no mask. Whether idle has ambient drift is open — see Q5.
+- **Hover entry** `[Designed]`: the instant the cursor enters the surface's bounding box, a soft-edged mask fades/scales in at the entry point (~150-200ms), immediately followed by the local grid content appearing inside it (same per-cell stagger draw-in described in section 6, just clipped to the mask).
+- **Active/hold** `[Designed spatial model, Certain content]`: mask follows cursor position continuously. Recommend an eased/lagged follow (lerp the mask's x/y toward the cursor's x/y each frame, factor ≈0.15-0.2) rather than a 1:1 snap — an instant-snap mask reads as a cutout, a slightly-lagged one reads as a physical lens. Whatever grid content falls inside the mask at any moment is what's visible; content is either (a) one pre-built full-surface HUD layer that the mask windows into as it moves, or (b) generated per-region on the fly. Recommend (a) — see section 7, it's cheaper and avoids popping.
+- **Hover exit** `[Designed]`: mask shrinks/fades out (~200-250ms, faster than entry) at the last cursor position before leaving the bounding box — not a full reset to center, it collapses where the cursor actually exited.
+- **Cursor influence** `[Designed]`: position drives mask location only, in the MVP. Do not tie grid content or scan-pulse timing to cursor speed unless you explicitly want that as a v2 embellishment — keeping it position-only is more predictable and cheaper to build correctly on the first pass.
+- **Outside the mask** `[Certain, per your instruction]`: must never animate. No global grid, no full-surface pulse, no reaction to hover at all outside the masked radius.
+
+---
+
+## 6. Reimagined Direction — Earth / Universe System [Designed, built on the extracted motion language]
+
+Keep: grid topology behavior (non-uniform rectilinear cells, node markers, flickering coordinate labels, traveling diagonal scan-pulse, single rare accent-color flash).
+
+Replace:
+- Flower → Earth + nebula plate (your reference image, or a slow-drifting version of it).
+- Pink→red bloom saturation shift → **not needed**; instead use a slow ambient parallax: nebula layer drifts ~2-4px over 8-12s loop, Earth stays static or rotates almost imperceptibly (`[Designed]`, ~0.02°/s, barely perceptible — the point is "alive," not "spinning").
+- White grid lines → keep near-white, but let the scan-pulse diagonal use a cold accent (cyan/electric-blue, consistent with the one blue flash you already have precedent for) instead of a random one-off.
+- Coordinate labels → keep the fake-telemetry format (`N.NNNNNNN`) but reflavor content as pseudo-orbital/spectral data (e.g. mock RA/DEC, spectral-class strings) — cosmetic only, still meaningless noise, don't fabricate real astronomical claims in copy anyone might read as factual.
+
+Designed interaction states, now spatially windowed (see section 5 for the full model):
+- **Idle:** plate visible everywhere, no grid anywhere.
+- **Hover-enter (0-200ms):** mask fades/scales in at cursor entry point; grid lines inside it draw in per-cell (stagger 20-40ms/cell), nodes pop in with a 1.05→1.0 scale settle, labels fade in with placeholder dashes before first real flicker.
+- **Active/hold:** mask lag-follows the cursor; whatever falls inside it shows the extracted behavior — label flicker + traveling scan-pulse — indefinitely, no re-trigger.
+- **Hover-exit (0-200ms, faster than entry):** mask collapses/fades at the exit point, not a mirrored replay of entry.
+
+Local reveal mechanic itself — this is the part with no footage precedent, treat as the actual design contribution here: a soft radial mask (spotlight/lens) that windows into one continuous pre-built HUD layer as the cursor moves, so panning across the surface feels like scanning a physical instrument over a fixed dataset, not like triggering separate hover zones.
+
+---
+
+## 7. Build Guidance [Designed — assumes Next.js/React/Tailwind per your existing stack; confirm per Q4]
+
+**Core technique: mask-windowed reveal, not per-region remounting.** Build the HUD grid as ONE continuous layer sized to the full surface (same dimensions as the background plate), always mounted and always animating its flicker/scan-pulse internally. Visibility is controlled entirely by a CSS `mask-image`/`-webkit-mask-image` radial-gradient (or an SVG `<mask>` with a `<circle>`) whose center tracks the cursor. This avoids mounting/unmounting grid cells as the cursor moves, which is the difference between smooth and janky.
+
+**Layer stack (z-index, back to front):**
+1. Background plate — static image or muted looping video of Earth/nebula. If idle ambient drift is confirmed (Q5), it lives here, independent of hover state.
+2. HUD layer (full-surface, always mounted) — SVG grid: lines, nodes, labels, scan-pulse, exactly as extracted in sections 3-4. This layer's own animations (flicker, scan-pulse) run continuously regardless of mask position — the mask decides what's *visible*, not what's *animating*. Simpler to reason about, and nothing pops when the mask arrives at a new region because the content underneath was already live.
+3. Mask controller — a single absolutely-positioned div (or the `mask` attribute on layer 2 directly) whose `--mx`/`--my` CSS custom properties are updated on `pointermove`, driving a `radial-gradient(circle at var(--mx) var(--my), white 0%, white 60%, transparent 100%)` mask. Position updates via `requestAnimationFrame` with the lerp described in section 5, not directly on the event.
+
+**Component shape (React):**
+```
+<CosmicHoverSurface>
+  <BackgroundPlate />              // img/video, idle-only motion if any
+  <HudLayer maskPos={lerpedPos}/>  // full-surface SVG, always animating internally,
+                                    // clipped via CSS mask driven by maskPos
+    // internally: <GridLines/> <Nodes/> <TelemetryLabels/> <ScanPulse/>
+</CosmicHoverSurface>
+```
+
+**Pointer handling:**
+- `onPointerMove` on the surface writes raw x/y into a ref (not state — avoid re-render per mousemove).
+- A single `requestAnimationFrame` loop reads the raw target, lerps the displayed mask position toward it, writes the result to a CSS custom property via direct DOM (`el.style.setProperty`). This is the only place layout-adjacent work happens, and it's not React state, so it doesn't re-render the tree 60x/sec.
+- `onPointerEnter`/`onPointerLeave` on the surface toggle the enter/exit fade (opacity/scale on the mask container), independent of the position loop.
+
+**Performance rules (non-negotiable for a premium feel):**
+- Mask position updates: `transform`/CSS-custom-property + `requestAnimationFrame`, never React state per frame.
+- Label flicker: throttled interval (~100-150ms), direct `textContent` write via ref, not state.
+- Scan-pulse: `stroke-dashoffset`/opacity only.
+- Respect `prefers-reduced-motion`: disable lerp-follow (snap instead), disable flicker/scan-pulse, disable idle drift — show a static grid inside a static, larger reveal region on focus/hover instead.
+- Keep grid line count modest (source uses ~6-10 lines on screen at once) — since only a portion is visible through the mask at any time, don't over-populate the full layer either; density should look right at the mask's scale, not at the full-surface scale.
+
+---
+
+## 8. Antigravity Prompt — via `/antigravity-prompt-engineer` [paste-ready]
+
+**One real gap this skill normally blocks on:** I don't have your actual repo, so I can't read `@CONTEXT.md` or confirm real file paths — the skill's own rule is "ask before generating, do not guess," but you told me to use my judgment on everything except what you'd already fixed. Repo paths aren't a design judgment call, they're a fact I don't have, so they're marked `<PLACEHOLDER>` below, not invented. Swap them before pasting this in, and if you don't have a `CONTEXT.md`/`GEMINI.md`/`.agent/` setup yet, run the skill's bootstrap step first — the prompt below assumes that scaffolding exists.
+
+```
+[MODE: Planning]
+[TASK TYPE: Coding]
+[LAYER: UI]
+[MODEL: Gemini 3.1 Pro High]
+
+## Objective
+The hero section shows a static Earth/nebula scene with subtle ambient drift; when
+the cursor moves over it, a soft ~260px circular "scanner" reveals an animated
+sci-fi HUD grid (lines, nodes, flickering coordinate labels, a traveling diagonal
+scan-pulse) ONLY inside that circle, following the cursor with a slight lag,
+while everything outside the circle stays completely static — and this must run
+at 60fps with zero layout thrash.
+
+## Context
+- Stack: Next.js, React, TypeScript, Tailwind. Pointer/mask tracking uses raw refs
+  + requestAnimationFrame — NOT a motion library. Framer Motion (if already a
+  dependency — check @CONTEXT.md before adding it) may ONLY be used for the
+  low-frequency mask enter/exit opacity/scale fade, never for the pointer loop.
+- Current state: @CONTEXT.md
+- Entry point: <PLACEHOLDER — the actual hero page/component file, e.g.
+  app/page.tsx or app/(marketing)/page.tsx. Locate the real one before writing
+  anything; do not guess if more than one candidate exists — stop and ask.>
+- Related files: <PLACEHOLDER — existing hero component directory, e.g.
+  components/hero/, and wherever shared Tailwind design tokens live>
+- Do NOT touch: any file under services/, routes/ (or app/api/), repositories/,
+  middleware/, supabase/, or anything auth-related. This task is visual only.
+- Pattern to follow: match whatever existing component/styling conventions are
+  already in the repo (file naming, Tailwind usage, TS typing style) — do not
+  introduce a new pattern just for this feature.
+
+## Task
+1. Build an idle background layer for the hero: the provided Earth + nebula
+   image/asset, Earth cropped at the bottom third of the frame, dark vignette at
+   the bottom edge. Add a barely-perceptible ambient drift to the starfield/nebula
+   only (~2-4px translate over an 8-12s ease-in-out yoyo loop) — Earth itself stays
+   static or rotates so slowly it reads as still. No grid, no labels, no scan-pulse
+   exist in this layer, ever.
+2. Build one full-hero-sized SVG "HUD layer", mounted once, that runs continuously
+   and unconditionally (regardless of pointer state):
+   - A non-uniform rectilinear grid (vary cell size — irregularity is intentional),
+     roughly 3-4 columns x 2-3 rows across the hero.
+   - 1px near-white (#EAEAEA-ish) lines, small square/dot node markers (4-6px) at
+     every intersection, no drop shadow.
+   - One small monospace label per cell (bottom-left corner near its node), format
+     like "2.4817203" (1 digit, decimal point, 6-7 fractional digits),
+     font-variant-numeric: tabular-nums so digit changes never shift layout. Values
+     re-randomize on a throttled ~120ms interval via direct ref/textContent
+     writes — never via React state/re-render.
+   - A traveling diagonal scan-pulse: one cell at a time gets a corner-to-corner
+     diagonal (bottom-left node to top-right node) in an electric-blue/cyan accent
+     (the only color accent in the system). Lifecycle: draw in ~150-200ms via
+     stroke-dashoffset, hold solid ~150-200ms, dissolve to a fainter/dashed state
+     over ~200-250ms, disappear, then re-fire in a DIFFERENT adjacent cell after a
+     ~600-900ms gap. Never repeat the same cell twice in a row. Loops forever.
+3. Build the reveal mask: a single element using CSS mask-image (or an SVG <mask>
+   with a soft-edge <circle>) that clips the HUD layer to a ~260px diameter circle
+   with a ~50px feathered edge. Track raw pointer position via onPointerMove into a
+   ref (not state). Drive the DISPLAYED mask position from a requestAnimationFrame
+   loop that lerps toward the raw target (lerp factor ~0.15-0.2) and writes the
+   result to CSS custom properties (--mx/--my) via direct style.setProperty.
+4. Wire pointer-enter/pointer-leave on the hero: fade+scale the mask in at the
+   entry point (~150-200ms) on enter, fade+scale it out at the last cursor position
+   (~150-200ms, no mirrored replay) on leave.
+5. Add a touch/mobile fallback: on tap, reveal the mask at the tap point, hold
+   ~2.5s, auto fade-out. No attempt to fake persistent hover on touch.
+6. Add a prefers-reduced-motion branch: disable the lerp (snap the mask instead),
+   disable label flicker and scan-pulse, disable ambient drift — on hover/focus,
+   show a static grid inside a static mask with no motion anywhere.
+
+## Constraints
+- This is a UI-only task. Do NOT touch any logic, service, route, API, or data
+  layer files under any circumstances.
+- Mask position and pointer tracking: CSS custom properties + requestAnimationFrame
+  only. Never React state on a per-pointermove or per-frame basis.
+- Label flicker: throttled interval, ref-driven textContent only, never state.
+- Scan-pulse: stroke-dashoffset / opacity only — never animate width/height/top/left
+  on any element in this system, at any point.
+- Grid stays visually correct at MASK scale (~260px window), not full-hero scale —
+  do not overpopulate the full SVG layer just because it's bigger than the mask.
+- Do not modify files not listed above. Do not install new packages without asking
+  (including any animation library, even Framer Motion, if it isn't already a
+  dependency — check first). Do not refactor unrelated hero code. Match existing
+  code style exactly — do not "improve" adjacent code.
+- If the real hero entry file is ambiguous, or CONTEXT.md/GEMINI.md don't exist,
+  STOP and ask — do not invent a file path or bootstrap silently.
+
+## Deliverables
+- [ ] Hero background/idle layer (image + subtle drift, Earth static)
+- [ ] HudLayer component (SVG grid + nodes + labels + scan-pulse, always animating)
+- [ ] Pointer/mask hook (raw ref tracking + rAF lerp, no state in the hot path)
+- [ ] Mask wiring (CSS mask-image or SVG mask, enter/exit fade)
+- [ ] Touch fallback (tap-reveal-hold-fade)
+- [ ] prefers-reduced-motion branch
+- [ ] Integration into the real hero entry file, existing hero copy/CTA untouched
+
+## Success Criteria
+- Moving the pointer over the hero reveals the grid ONLY inside a ~260px soft
+  circle around the cursor; nothing animates outside that circle, ever.
+- With no pointer present (idle), zero grid/label/scan-pulse elements are visible
+  anywhere — only the background layer and its ambient drift.
+- Label digits update on an interval, never every frame, and never cause any
+  visible layout shift.
+- No React state updates fire on pointermove or inside the rAF loop (verify via
+  React DevTools profiler — zero re-renders from mouse movement).
+- prefers-reduced-motion: enabled disables lerp/flicker/scan-pulse/drift entirely.
+- `npm run build` (or repo's actual build command) passes with no new errors.
+- Only files listed above were modified (`git diff --name-only`).
+
+## Failure Modes to Avoid
+- Do not touch services/routes/repositories/middleware/supabase — this is a
+  UI-only task.
+- Do not use React state for pointer position or mask coordinates.
+- Do not animate any layout property (top/left/width/height) anywhere in this
+  feature.
+- Do not add unrequested abstractions, extra particles, extra color accents, or
+  extra overlay text beyond what's specified.
+- Do not remove or rename existing hero exports, copy, or CTAs.
+- If a success criterion can't be verified, STOP and report it — do not mark the
+  task done anyway.
+
+When this task is complete, run /sync to update CONTEXT.md.
+```
