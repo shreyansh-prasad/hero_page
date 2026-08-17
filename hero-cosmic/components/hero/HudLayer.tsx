@@ -178,10 +178,8 @@ export default function HudLayer({ reducedMotion = false }: { reducedMotion?: bo
   const colX = COL_POS.map(f => MARGIN + f * innerW);
   const rowY = ROW_POS.map(f => MARGIN + f * innerH);
 
-  // Collect label refs during render
-  labelRefs.current = [];
-  scanLineRefs.current = [];
-
+  // Refs will be populated by the callback refs on the elements.
+  // We initialize them to empty arrays or maintain them by index.
   return (
     <svg
       ref={svgRef}
@@ -236,12 +234,12 @@ export default function HudLayer({ reducedMotion = false }: { reducedMotion?: bo
       {cells.map((cell, i) => (
         <text
           key={`label-${i}`}
-          ref={(el) => { if (el) labelRefs.current.push(el); }}
+          ref={(el) => { if (el) labelRefs.current[i] = el; }}
           x={colX[cell.col] + 8}
           y={rowY[cell.row + 1] - 10}
           fill={LABEL_COLOR}
           fontSize={LABEL_SIZE}
-          fontFamily="ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace"
+          fontFamily="var(--font-corpta)"
           style={{ fontVariantNumeric: 'tabular-nums' }}
           suppressHydrationWarning
         >
@@ -253,7 +251,7 @@ export default function HudLayer({ reducedMotion = false }: { reducedMotion?: bo
       {cells.map((cell, i) => (
         <line
           key={`scan-${i}`}
-          ref={(el) => { if (el) scanLineRefs.current.push(el); }}
+          ref={(el) => { if (el) scanLineRefs.current[i] = el; }}
           x1={colX[cell.col]}
           y1={rowY[cell.row + 1]}
           x2={colX[cell.col + 1]}

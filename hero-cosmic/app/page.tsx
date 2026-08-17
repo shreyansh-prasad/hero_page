@@ -11,7 +11,7 @@ export default function Home() {
   const reducedMotion = useReducedMotion();
   const [hudVisible, setHudVisible] = useState(false);
 
-  const handleEnter = useCallback((_x: number, _y: number) => {
+  const handleEnter = useCallback(() => {
     setHudVisible(true);
   }, []);
 
@@ -19,7 +19,7 @@ export default function Home() {
     setHudVisible(false);
   }, []);
 
-  const handleTap = useCallback((_x: number, _y: number) => {
+  const handleTap = useCallback(() => {
     setHudVisible(true);
     // Touch auto-fade is handled inside the hook (2.5s timeout calls onLeave)
   }, []);

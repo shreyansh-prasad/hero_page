@@ -31,7 +31,7 @@ export function usePointerTracker(options: PointerTrackerOptions = {}) {
   const touchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // The rAF loop — lerps displayPos toward rawTarget, writes CSS vars
-  const tick = useCallback(() => {
+  const tick = useCallback(function tickFn() {
     const el = containerRef.current;
     if (!el || !isInside.current) return;
 
@@ -49,7 +49,7 @@ export function usePointerTracker(options: PointerTrackerOptions = {}) {
     el.style.setProperty('--mx', `${displayPos.current.x}px`);
     el.style.setProperty('--my', `${displayPos.current.y}px`);
 
-    rafId.current = requestAnimationFrame(tick);
+    rafId.current = requestAnimationFrame(tickFn);
   }, [lerp, snap]);
 
   const startLoop = useCallback(() => {

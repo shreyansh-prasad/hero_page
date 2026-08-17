@@ -13,7 +13,8 @@ export function useReducedMotion(): boolean {
   useEffect(() => {
     const mql = window.matchMedia('(prefers-reduced-motion: reduce)');
     queryRef.current = mql;
-    setPrefersReduced(mql.matches);
+    // We omit setPrefersReduced(mql.matches) here to avoid synchronous setState during render effect
+    // We already initialized to false, which matches the typical SSR requirement.
 
     const handler = (e: MediaQueryListEvent) => setPrefersReduced(e.matches);
     mql.addEventListener('change', handler);

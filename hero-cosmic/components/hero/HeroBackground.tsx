@@ -123,20 +123,37 @@ export default function HeroBackground() {
         style={{ transform: `translate3d(${x * -35}px, ${y * -35}px, 0)` }}
       >
         {/* Pre-headline */}
-        <div className="absolute top-[8vh] left-0 right-0 flex justify-center px-6">
+        <div className="absolute top-[3vh] left-0 right-0 flex flex-col items-center px-6 space-y-2">
           <p
+            className="max-w-4xl"
             style={{
-              fontFamily: 'var(--font-space-grotesk), sans-serif',
+              fontFamily: 'var(--font-corpta), sans-serif',
               fontWeight: 700,
-              fontSize: '1rem',
-              letterSpacing: '0.3em',
+              fontSize: '0.95rem',
+              letterSpacing: '0.25em',
               textTransform: 'uppercase',
-              color: 'rgba(220,235,255,0.85)',
-              textShadow: '0 0 24px rgba(100,180,255,0.55), 0 2px 10px rgba(0,0,0,0.95)',
+              color: 'rgba(230,240,255,0.95)',
+              textShadow: '0 0 24px rgba(100,180,255,0.6), 0 2px 10px rgba(0,0,0,0.95)',
               textAlign: 'center',
             }}
           >
-            For decades, we built machines to master nature
+            For decades, we built machines to master nature.
+          </p>
+          <p
+            className="max-w-3xl"
+            style={{
+              fontFamily: 'var(--font-corpta), sans-serif',
+              fontWeight: 600,
+              fontSize: '0.75rem',
+              letterSpacing: '0.15em',
+              lineHeight: '1.6',
+              textTransform: 'uppercase',
+              color: 'rgba(180,210,255,0.75)',
+              textShadow: '0 0 16px rgba(80,160,255,0.4), 0 2px 8px rgba(0,0,0,0.95)',
+              textAlign: 'center',
+            }}
+          >
+            Now, at the edge of intelligence, we realize the ultimate technology isn't silicon—it's the ecosystem itself. Welcome to the convergence
           </p>
         </div>
 
@@ -144,7 +161,7 @@ export default function HeroBackground() {
         <div
           style={{
             position: 'absolute',
-            top: '8vh',
+            top: '3vh',
             left: '50%',
             transform: 'translateX(-50%)',
             width: '100vw',
@@ -173,7 +190,7 @@ export default function HeroBackground() {
           className="absolute left-0 right-0 px-12 flex justify-between items-center"
           style={{
             top: '48vh',
-            fontFamily: 'var(--font-space-grotesk), sans-serif',
+            fontFamily: 'var(--font-corpta), sans-serif',
           }}
         >
           <span style={{

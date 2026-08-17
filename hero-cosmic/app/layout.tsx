@@ -1,32 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Exo_2, Nunito, Space_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const exo2 = Exo_2({
-  weight: ["700", "800", "900"],
-  variable: "--font-exo2",
-  subsets: ["latin"],
-});
-
-const nunito = Nunito({
-  weight: ['900'],
-  variable: '--font-nunito',
-  subsets: ['latin'],
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
+const corpta = localFont({
+  src: "../public/fonts/Corpta.ttf.otf",
+  variable: "--font-corpta",
 });
 
 export const metadata: Metadata = {
@@ -34,13 +12,13 @@ export const metadata: Metadata = {
   description: "A premium cosmic hero with cursor-localized HUD scanner interaction",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${exo2.variable} ${nunito.variable} ${spaceGrotesk.variable} antialiased`}
+      className={`${corpta.variable} antialiased`}
     >
-      <body className="bg-black text-white overflow-hidden">{children}</body>
+      <body className="bg-black text-white overflow-hidden font-corpta">{children}</body>
     </html>
   );
 }
