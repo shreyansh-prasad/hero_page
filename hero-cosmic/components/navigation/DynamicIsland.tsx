@@ -15,7 +15,7 @@ export default function DynamicIsland() {
 
   // Apple-like tight, fluid spring physics
   const springTransition = {
-    type: 'spring',
+    type: 'spring' as const,
     stiffness: 400,
     damping: 30,
     mass: 1,
@@ -51,7 +51,7 @@ export default function DynamicIsland() {
               className="flex items-center justify-center px-10 py-4 min-w-[180px]"
             >
               <span
-                style={{ fontFamily: 'var(--font-corpta), sans-serif' }}
+                style={{ fontFamily: 'var(--font-corpta)' }}
                 className="text-[0.75rem] tracking-[0.4em] font-medium text-white/90 uppercase mt-[2px]"
               >
                 Shunya
@@ -69,7 +69,7 @@ export default function DynamicIsland() {
             >
               <div className="flex items-center">
                 <span
-                  style={{ fontFamily: 'var(--font-corpta), sans-serif' }}
+                  style={{ fontFamily: 'var(--font-corpta)' }}
                   className="text-[0.8rem] tracking-[0.3em] font-semibold text-white uppercase mt-[2px]"
                 >
                   Shunya
@@ -81,7 +81,7 @@ export default function DynamicIsland() {
                   <a
                     key={link.name}
                     href={link.href}
-                    style={{ fontFamily: 'var(--font-corpta), sans-serif' }}
+                    style={{ fontFamily: 'var(--font-corpta)' }}
                     className="text-[0.65rem] tracking-[0.25em] uppercase text-white/60 hover:text-white transition-all duration-300"
                   >
                     {link.name}
@@ -91,7 +91,7 @@ export default function DynamicIsland() {
 
               <div>
                 <button
-                  style={{ fontFamily: 'var(--font-corpta), sans-serif' }}
+                  style={{ fontFamily: 'var(--font-corpta)' }}
                   className="px-6 py-2.5 rounded-full bg-white/10 border border-white/10 text-[0.6rem] tracking-[0.2em] uppercase text-white hover:bg-white hover:text-black transition-all duration-300 font-semibold"
                 >
                   Connect
@@ -114,7 +114,7 @@ export default function DynamicIsland() {
              >
                <div className="flex items-center pb-4 border-b border-white/10 w-full justify-center">
                  <span
-                   style={{ fontFamily: 'var(--font-corpta), sans-serif' }}
+                   style={{ fontFamily: 'var(--font-corpta)' }}
                    className="text-[0.85rem] tracking-[0.3em] font-semibold text-white uppercase mt-[2px]"
                  >
                    Shunya
@@ -124,7 +124,7 @@ export default function DynamicIsland() {
                  <a
                    key={link.name}
                    href={link.href}
-                   style={{ fontFamily: 'var(--font-corpta), sans-serif' }}
+                   style={{ fontFamily: 'var(--font-corpta)' }}
                    className="text-[0.7rem] tracking-[0.25em] uppercase text-white/60"
                  >
                    {link.name}
