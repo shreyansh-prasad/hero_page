@@ -2,9 +2,9 @@
 
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-// @ts-ignore
+// @ts-expect-error
 import { SplitText } from 'gsap/SplitText';
-// @ts-ignore
+// @ts-expect-error
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 
 if (typeof window !== 'undefined') {
