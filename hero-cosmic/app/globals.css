@@ -9,13 +9,26 @@
 }
 
 /* ─── Base ───────────────────────────────────────────────────────── */
-html,
+html {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  /* Scroll lives on the document (html/body) so window.scrollY works */
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   padding: 0;
   background: #000;
-  overflow: hidden;
   font-family: var(--font-corpta), sans-serif;
+}
+
+@keyframes char-glow-in {
+  0%   { color: rgba(96, 165, 250, 0.9); text-shadow: 0 0 12px rgba(96,165,250,0.9); }
+  100% { color: rgba(220, 235, 255, 0.88); text-shadow: none; }
 }
 
 /* ─── Hero Background (DOM Layered Parallax) ───────────────────────── */
@@ -77,6 +90,11 @@ body {
   100% { transform: scale(1) translateY(0); }
 }
 
+@keyframes spin-earth {
+  from { transform: scale(1.25) rotate(0deg); }
+  to { transform: scale(1.25) rotate(360deg); }
+}
+
 @keyframes breathe-stars {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.02); opacity: 0.8; }
@@ -91,6 +109,11 @@ body {
 
 .hero-bg__breathe-earth {
   animation: breathe-earth 45s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-spin-earth {
+  animation: spin-earth 180s linear infinite;
   will-change: transform;
 }
 

@@ -1,0 +1,27 @@
+.scramble-block {
+  font-family: var(--font-corpta), sans-serif;
+  color: rgba(220, 235, 255, 0.88);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  line-height: 1.9;
+}
+
+.scramble-block .char {
+  display: inline-block;
+  will-change: opacity, color, text-shadow;
+  transition: color 0.05s linear, text-shadow 0.05s linear;
+  cursor: default;
+}
+
+/* Active scramble state — character is being resolved */
+.scramble-block .char.is-resolving {
+  color: rgba(96, 165, 250, 0.95);
+  text-shadow:
+    0 0 8px rgba(96, 165, 250, 0.8),
+    0 0 20px rgba(96, 165, 250, 0.4);
+}
+
+@keyframes char-glow-in {
+  0%   { color: rgba(96, 165, 250, 0.9); text-shadow: 0 0 12px rgba(96,165,250,0.9); }
+  100% { color: rgba(220, 235, 255, 0.88); text-shadow: none; }
+}

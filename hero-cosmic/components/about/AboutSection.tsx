@@ -1,0 +1,230 @@
+'use client';
+
+import React, { useRef } from 'react';
+
+import HeroBorder from '../hero/HeroBorder';
+import ScrambledText from './ScrambledText';
+
+const BODY_TEXT =
+  `Shunya 2026 is GDG NSUT’s flagship technology festival built around a bold vision — a future where technology and nature evolve together. The festival explores how Artificial Intelligence, Robotics, IoT, Biotechnology, Renewable Energy, Space Technology, and Sustainable Engineering can work alongside natural ecosystems to solve humanity’s greatest challenges. More than a celebration of technology, Shunya 2026 is a platform for responsible innovation — where creativity meets sustainability and ideas become solutions for a better tomorrow.`;
+
+const FONT        = 'var(--font-corpta), sans-serif';
+
+// ── Main About Section ──
+export default function AboutSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+
+  return (
+    <section
+      ref={sectionRef}
+      id="about"
+      style={{
+        position: 'relative',
+        width: '100%',
+        background: '#000000', // Pure black background
+        overflow: 'hidden',
+      }}
+    >
+      <HeroBorder />
+
+      {/* Star layer 1 — deep stars */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: '-10%', zIndex: 0,
+        transform: `translate3d(calc(var(--mouse-x, 0) * -18px), calc(var(--mouse-y, 0) * -18px), 0)`,
+        willChange: 'transform', pointerEvents: 'none',
+        backgroundImage: 'url(/cosmic/stars_deep.png)',
+        backgroundSize: 'cover', backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        opacity: 0.25,   // increased to make stars more evident
+      }} />
+
+      {/* Star layer 2 — nearer stars */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: '-8%', zIndex: 0,
+        transform: `translate3d(calc(var(--mouse-x, 0) * -32px), calc(var(--mouse-y, 0) * -32px), 0)`,
+        willChange: 'transform', pointerEvents: 'none',
+        backgroundImage: 'url(/cosmic/stars_cinematic.png)',
+        backgroundSize: 'cover', backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        opacity: 0.15,   // increased to make stars more evident
+        mixBlendMode: 'screen',
+      }} />
+
+      {/* Top crossfade to blend with Hero */}
+      <div aria-hidden style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '20vh',
+        background: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, transparent 100%)',
+        pointerEvents: 'none', zIndex: 2,
+      }} />
+
+      {/* Desktop Earth glow hint */}
+      <div aria-hidden className="hidden md:block absolute" style={{
+        left: '28vw', top: '55vh', width: '55vw', height: '65vh',
+        transform: 'translate(-50%, -50%)',
+        background: 'radial-gradient(ellipse at center, rgba(30,80,200,0.07) 0%, rgba(10,40,120,0.03) 50%, transparent 75%)',
+        pointerEvents: 'none', zIndex: 1,
+      }} />
+
+      {/*
+        MOBILE LAYOUT (hidden on md+)
+        Structure: section label -> Earth globe -> connector line -> heading -> body -> HUD metadata
+      */}
+      <div className="md:hidden flex flex-col" style={{ minHeight: '100svh', position: 'relative', zIndex: 10 }}>
+
+        {/* Top zone: label + Earth */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '60px' }}>
+
+          {/* Section label */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
+            <svg width="7" height="7" viewBox="0 0 10 10" fill="none" aria-hidden>
+              <rect width="3" height="3" fill="#60A5FA" className="animate-pulse"/>
+              <rect y="7" width="3" height="3" fill="#60A5FA"/>
+            </svg>
+            <span style={{ fontFamily: FONT, fontSize: '0.47rem', letterSpacing: '0.5em', color: 'rgba(96,165,250,0.7)', textTransform: 'uppercase' }}>
+              Section // 02
+            </span>
+            <div style={{ width: '44px', height: '1px', background: 'rgba(96,165,250,0.18)' }} />
+          </div>
+
+
+
+          {/* Vertical connector */}
+          <div style={{
+            width: '1px', height: '32px',
+            background: 'linear-gradient(to bottom, rgba(96,165,250,0.4), transparent)',
+            marginTop: '20px',
+          }} />
+        </div>
+
+        {/* Text zone */}
+        <div style={{ padding: '18px 28px 52px 28px', display: 'flex', flexDirection: 'column' }}>
+
+          {/* Heading */}
+          <div style={{ marginBottom: '20px', position: 'relative', paddingLeft: '16px' }}>
+            <div style={{
+              position: 'absolute', left: 0, top: 0, bottom: 0, width: '1px',
+              background: 'linear-gradient(to bottom, rgba(96,165,250,0.6), transparent)',
+            }}/>
+            <div style={{
+              fontFamily: FONT, fontSize: 'clamp(2.5rem, 10vw, 3.2rem)',
+              fontWeight: 700, letterSpacing: '0.05em', lineHeight: 0.95,
+              textTransform: 'uppercase', color: 'rgba(230,240,255,0.95)',
+              textShadow: '0 0 60px rgba(96,165,250,0.12)', userSelect: 'none',
+            }}>About</div>
+            <div style={{
+              fontFamily: FONT, fontSize: 'clamp(2.5rem, 10vw, 3.2rem)',
+              fontWeight: 700, letterSpacing: '0.05em', lineHeight: 1.05,
+              textTransform: 'uppercase', color: '#ffffff',
+              textShadow: '0 0 40px rgba(96,165,250,0.4), 0 0 90px rgba(96,165,250,0.15)',
+              userSelect: 'none',
+            }}>Shunya</div>
+            <div style={{
+              marginTop: '14px', height: '1px', width: '65%',
+              background: 'linear-gradient(to right, rgba(96,165,250,0.5) 0%, rgba(96,165,250,0.05) 80%, transparent 100%)',
+            }}/>
+          </div>
+
+          {/* Body text */}
+          <p style={{
+            fontFamily: "'Inter', 'Roboto', system-ui, -apple-system, sans-serif",
+            fontWeight: 300, fontSize: '0.93rem', letterSpacing: '0.015em',
+            lineHeight: '1.72', color: 'rgba(220,232,255,0.80)',
+            textTransform: 'none', marginBottom: '28px',
+          }}>
+            {BODY_TEXT}
+          </p>
+
+          {/* HUD metadata */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '20px', height: '1px', background: 'rgba(96,165,250,0.4)' }}/>
+            <span style={{ fontFamily: FONT, fontSize: '0.42rem', letterSpacing: '0.45em', color: 'rgba(96,165,250,0.45)', textTransform: 'uppercase' }}>
+              GDG NSUT · Est. 2026
+            </span>
+            <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, rgba(96,165,250,0.15), transparent)' }}/>
+          </div>
+        </div>
+      </div>
+
+      {/*
+        DESKTOP LAYOUT (hidden on mobile)
+        Animated Earth left, text right
+      */}
+      <div className="hidden md:flex" style={{ position: 'relative', zIndex: 10, minHeight: '100vh', alignItems: 'center', width: '100%' }}>
+        {/* Right content column — wider, less aggressive padding */}
+        <div
+          style={{
+            position: 'relative', zIndex: 10,
+            display: 'flex', flexDirection: 'column', justifyContent: 'center',
+            width: '100%', paddingTop: '6vh', paddingBottom: '6vh',
+          }}
+          className="ml-auto max-w-[62vw] pl-[clamp(20px,2.5vw,40px)] pr-[clamp(24px,3.5vw,60px)]"
+        >
+          {/* Label */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '28px' }}>
+            <svg width="7" height="7" viewBox="0 0 10 10" fill="none" aria-hidden>
+              <rect width="3" height="3" fill="#60A5FA" className="animate-pulse"/>
+              <rect y="7" width="3" height="3" fill="#60A5FA"/>
+            </svg>
+            <span style={{ fontFamily: FONT, fontSize: '0.47rem', letterSpacing: '0.5em', color: 'rgba(96,165,250,0.7)', textTransform: 'uppercase' }}>
+              Section // 02
+            </span>
+            <div style={{ width: '44px', height: '1px', background: 'rgba(96,165,250,0.18)' }} />
+          </div>
+
+          {/* Heading */}
+          <div style={{ marginBottom: '32px', position: 'relative' }}>
+            <div style={{
+              position: 'absolute', left: '-20px', top: 0, bottom: 0, width: '1px',
+              background: 'linear-gradient(to bottom, rgba(96,165,250,0.6), transparent)',
+            }}/>
+            <div style={{
+              fontFamily: FONT, fontSize: 'clamp(3rem, 5.5vw, 5rem)',
+              fontWeight: 700, letterSpacing: '0.05em', lineHeight: 0.95,
+              textTransform: 'uppercase', color: 'rgba(230,240,255,0.95)',
+              textShadow: '0 0 60px rgba(96,165,250,0.12)', userSelect: 'none',
+            }}>About</div>
+            <div style={{
+              fontFamily: FONT, fontSize: 'clamp(3rem, 5.5vw, 5rem)',
+              fontWeight: 700, letterSpacing: '0.05em', lineHeight: 1.05,
+              textTransform: 'uppercase', color: '#ffffff',
+              textShadow: '0 0 40px rgba(96,165,250,0.4), 0 0 90px rgba(96,165,250,0.15)',
+              userSelect: 'none',
+            }}>Shunya</div>
+            <div style={{
+              marginTop: '16px', height: '1px', width: '80%',
+              background: 'linear-gradient(to right, rgba(96,165,250,0.5) 0%, rgba(96,165,250,0.05) 80%, transparent 100%)',
+            }}/>
+          </div>
+
+          {/* Body text — wider max-width, premium ScrambleText */}
+          <ScrambledText
+            radius={120}
+            duration={2.5}
+            speed={0.15}
+            scrambleChars=".:"
+            style={{ maxWidth: '760px' }}
+          >
+            {BODY_TEXT}
+          </ScrambledText>
+
+          {/* Metadata */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '28px' }}>
+            <div style={{ width: '20px', height: '1px', background: 'rgba(96,165,250,0.4)' }}/>
+            <span style={{ fontFamily: FONT, fontSize: '0.42rem', letterSpacing: '0.45em', color: 'rgba(96,165,250,0.4)', textTransform: 'uppercase' }}>
+              GDG NSUT · Est. 2026
+            </span>
+            <div style={{ width: '60px', height: '1px', background: 'linear-gradient(to right, rgba(96,165,250,0.15), transparent)' }}/>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom fade */}
+      <div aria-hidden style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0, height: '12vh',
+        background: 'linear-gradient(to bottom, transparent 0%, rgba(0,3,10,0.95) 100%)',
+        zIndex: 3, pointerEvents: 'none',
+      }} />
+    </section>
+  );
+}

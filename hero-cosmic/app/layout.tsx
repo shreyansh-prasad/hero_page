@@ -5,6 +5,7 @@ import "./globals.css";
 const corpta = localFont({
   src: "../public/fonts/Corpta.ttf.otf",
   variable: "--font-corpta",
+  preload: false,
 });
 
 export const metadata: Metadata = {
