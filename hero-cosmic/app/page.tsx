@@ -6,6 +6,7 @@ import HudLayer from '@/components/hero/HudLayer';
 import HeroBorder from '@/components/hero/HeroBorder';
 import AboutSection from '@/components/about/AboutSection';
 import HeroEarth from '@/components/hero/HeroEarth';
+import DynamicIsland from '@/components/navigation/DynamicIsland';
 import { usePointerTracker } from '@/hooks/usePointerTracker';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useScrollEarth } from '@/hooks/useScrollEarth';
@@ -39,6 +40,9 @@ export default function Home() {
 
   return (
     <main className="relative w-screen bg-black">
+      {/* ── Dynamic Island Navigation ── */}
+      <DynamicIsland />
+
       {/* ── Fixed cosmic background (stars, nebula, HUD) ── */}
       <HeroBackground hudRef={hudRef} />
 
