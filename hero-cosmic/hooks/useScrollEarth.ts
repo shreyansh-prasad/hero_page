@@ -54,6 +54,7 @@ export function useScrollEarth() {
     const tick = () => {
       const scrollY = window.scrollY;
       const vh      = window.innerHeight;
+      const vw      = window.innerWidth;
 
       // progress 0 → 1 over one viewport-height of scroll
       const raw = clamp(scrollY / Math.max(vh, 1), 0, 1);

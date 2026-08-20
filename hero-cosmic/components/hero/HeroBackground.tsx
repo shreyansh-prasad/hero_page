@@ -152,7 +152,7 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
         <div
           style={{
             position: 'absolute',
-            top: '10vh',
+            top: '3vh',
             left: '50%',
             transform: 'translateX(-50%)',
             width: '100vw',
