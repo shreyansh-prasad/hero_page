@@ -133,14 +133,20 @@ export default function AboutSection() {
           </div>
 
           {/* Body text */}
-          <p style={{
-            fontFamily: "'Inter', 'Roboto', system-ui, -apple-system, sans-serif",
-            fontWeight: 300, fontSize: '0.93rem', letterSpacing: '0.015em',
-            lineHeight: '1.72', color: 'rgba(220,232,255,0.80)',
-            textTransform: 'none', marginBottom: '28px',
-          }}>
+          <ScrambledText
+            radius={80}
+            duration={2.0}
+            speed={0.15}
+            scrambleChars=".:"
+            style={{
+              fontFamily: "'Inter', 'Roboto', system-ui, -apple-system, sans-serif",
+              fontWeight: 300, fontSize: '0.93rem', letterSpacing: '0.015em',
+              lineHeight: '1.72', color: 'rgba(220,232,255,0.80)',
+              textTransform: 'none', marginBottom: '28px',
+            }}
+          >
             {BODY_TEXT}
-          </p>
+          </ScrambledText>
 
           {/* HUD metadata */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

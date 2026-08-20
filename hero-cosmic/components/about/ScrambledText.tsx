@@ -4,11 +4,9 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 // @ts-ignore
 import { SplitText } from 'gsap/SplitText';
-// @ts-ignore
-import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(SplitText, ScrambleTextPlugin);
+  gsap.registerPlugin(SplitText);
 }
 
 interface ScrambledTextProps {
@@ -35,7 +33,7 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({
 
   useEffect(() => {
     if (!rootRef.current) return;
-    console.log('ScrambledText mounted, SplitText:', !!SplitText, 'ScrambleTextPlugin:', !!ScrambleTextPlugin);
+    console.log('ScrambledText mounted, SplitText:', !!SplitText);
 
     // Wait for a tick to ensure children are rendered
     const split = new SplitText(rootRef.current.querySelector('p'), {
@@ -76,15 +74,31 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({
 
         if (dist < radius) {
           if (!gsap.isTweening(c)) {
-            gsap.to(c, {
-              duration: duration * (1 - dist / radius),
-              scrambleText: {
-                text: (c as HTMLElement).dataset.content || '',
-                chars: scrambleChars,
-                speed
+            const el = c as HTMLElement;
+            const original = el.dataset.content || '';
+            const proxy = { p: 0 };
+            const animDuration = Math.max(0.1, duration * (1 - dist / radius));
+            
+            gsap.to(proxy, {
+              p: 1,
+              duration: animDuration,
+              ease: 'none',
+              onUpdate: () => {
+                if (proxy.p < 0.9) {
+                  // randomize char based on speed (throttle updates to make it readable)
+                  if (Math.random() > speed) {
+                    el.innerHTML = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                  }
+                } else {
+                  el.innerHTML = original;
+                }
               },
-              ease: 'none'
+              onComplete: () => {
+                el.innerHTML = original;
+              }
             });
+            // We also need to attach the tween to the element so isTweening(c) works
+            gsap.to(c, { duration: animDuration });
           }
         }
       });
