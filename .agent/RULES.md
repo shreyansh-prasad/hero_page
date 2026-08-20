@@ -9,6 +9,7 @@
 - Do not finalize uncertainty as fact.
 - Do not silently skip repository inspection.
 - Do not turn a local cursor effect into a global animation.
+- Do not make any further changes to the Earth models, alignments, sizing, or layout; the current layout is final.
 
 ## Visual rules
 - Earth belongs low in the frame.
