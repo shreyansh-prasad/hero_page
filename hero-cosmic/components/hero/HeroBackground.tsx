@@ -94,14 +94,14 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
         }}
       />
 
-      {/* ── 4. SHUNYA + Taglines (z-6, above Earth) — fades on scroll ── */}
+      {/* ── 4. SHUNYA + Taglines (z-[40], above Earth) — fades on scroll ── */}
       {/*
         hudRef is attached here. The parent component writes opacity/transform directly.
         The parallax transform is handled separately via useParallax.
       */}
       <div
         ref={hudRef}
-        className="absolute inset-0 z-[6] pointer-events-none"
+        className="absolute inset-0 z-[40] pointer-events-none"
         style={{ transform: `translate3d(calc(var(--mouse-x, 0) * -35px), calc(var(--mouse-y, 0) * -35px), 0)` }}
       >
         {/* ──── HUD DATA PANELS (4 Corners) ──── */}

@@ -45,22 +45,21 @@ export function useScrollEarth() {
 
       if (isMobile) {
         // MOBILE LOGIC
-        // "make the earth smaller and push it uppward"
-        const heroScale = 0.5; 
+        const heroScale = 0.65; 
         
-        // At t=0 (Hero): We want the top of the 820px Earth to be at 80% of the viewport height.
-        // The Earth's scaled radius is 410 * 0.5 = 205px.
-        // We want: (curVh / 2) + heroY - 205 = curVh * 0.8
-        // heroY = curVh * 0.8 + 205 - curVh / 2 = curVh * 0.3 + 205
-        const heroY = (curVh * 0.3) + 205;
+        // "push it right , and to the bottom , till only uperr half of earth is visible"
+        // Center exactly at bottom edge (curVh) -> relative to 50%, heroY = curVh * 0.5
+        const heroY = curVh * 0.5;
+        // Push it right slightly by 6vw to compensate for the left-side shadow without overlapping text
+        const heroX = 6;
 
         // At t=1 (About): Earth shrinks and moves up.
         const aboutScale = 0.45;
-        // Let's place it slightly above center for the About section
         const aboutY = -curVh * 0.1;
+        const aboutX = 0; // Re-center in the About section
 
         tgtScale = lerp(heroScale, aboutScale, t);
-        tgtX = 0; // Always perfectly horizontally centered
+        tgtX = lerp(heroX, aboutX, t);
         tgtY = lerp(heroY, aboutY, t);
 
         // "earth should not be static": make it scroll up naturally as the user reads About section
@@ -96,7 +95,7 @@ export function useScrollEarth() {
         // Div is at left:50%, top:50%. 
         // We use translate(-50%, -50%) to perfectly center it.
         // Then we add our X (vw) and Y (px) offsets.
-        const xOffset = isMobile ? '0px' : `${curX}vw`;
+        const xOffset = `${curX}vw`;
         earthRef.current.style.transform = `translate(-50%, -50%) translate(${xOffset}, ${curY}px)`;
       }
 
