@@ -44,3 +44,6 @@ If something is ambiguous:
 - stop
 - ask
 - do not fill the gap with imagination
+
+- NEVER push code to GitHub without the user's explicit permission.
+

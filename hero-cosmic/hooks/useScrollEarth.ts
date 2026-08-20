@@ -1,20 +1,5 @@
 import { useEffect, useRef } from 'react';
 
-/**
- * useScrollEarth — ref-based, zero-setState scroll animation.
- *
- * Returns refs to attach to:
- *  - earthRef: the fixed Earth container div
- *  - hudRef:   the HUD overlay div (for opacity fade)
- *
- * The RAF loop writes directly to element.style — no React re-renders,
- * no WebGL context loss, no canvas remounting.
- *
- * Earth anchor (center of the 820px container):
- *   scroll=0 → left:50%, top:100%  (only top hemisphere visible above fold)
- *   scroll=1 → left:72%, top:50%   (full sphere on right of About section)
- */
-
 function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
@@ -28,77 +13,103 @@ function easeInOutCubic(t: number): number {
 export function useScrollEarth() {
   const earthRef = useRef<HTMLDivElement>(null);
   const hudRef   = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    const initIsMobile = window.innerWidth < 768;
-    // Initialise Earth position immediately (before first scroll event)
-    if (earthRef.current) {
-      // Mobile uses px centering (see animation loop comment for why % doesn't work)
-      earthRef.current.style.left      = initIsMobile ? `${window.innerWidth / 2}px` : '50%';
-      // Mobile: Earth sits at bottom, just crown visible; Desktop: deeper below fold
-      earthRef.current.style.top       = initIsMobile ? '106%' : '108%';
-      earthRef.current.style.transform = `translate(-50%, -50%) scale(${initIsMobile ? 0.32 : 1})`;
-    }
-    if (hudRef.current) {
-      hudRef.current.style.opacity = '1';
-    }
+    if (!earthRef.current) return;
+    const el = earthRef.current;
+    const inner = el.querySelector('[data-earth-inner]') as HTMLElement | null;
+
+    if (hudRef.current) hudRef.current.style.opacity = '1';
 
     let rafId: number;
-    // Current animated values (lerp targets)
-    let curLeft  = 50;
-    let curTop   = initIsMobile ? 106 : 108;
-    let curScale = initIsMobile ? 0.32 : 1;
-    let curHud   = 1;
+    const LERPF = 0.12;
 
-    const LERPF = 0.12; // slightly snappier response
+    let curY = 0;
+    let curX = 0;
+    let curScale = 1;
+    let curHud = 1;
+
+    // We start off-screen to prevent flash, then snap on first tick.
+    let firstTick = true;
 
     const tick = () => {
-      const scrollY = window.scrollY;
-      const vh      = window.innerHeight;
-      const vw      = window.innerWidth;
-
-      // progress 0 → 1 over one viewport-height of scroll
-      const raw = clamp(scrollY / Math.max(vh, 1), 0, 1);
+      const scrollY  = window.scrollY;
+      const curVh    = window.innerHeight;
       const isMobile = window.innerWidth < 768;
-      const t   = easeInOutCubic(raw);
 
-      // Earth animation targets
-      // Mobile Hero  → scale 0.32, crown peeking at bottom (top 106%)
-      // Mobile About → scale 0.42, Earth below text, well clear of metadata (top 88%)
-      // Desktop Hero  → full size (scale 1) below fold
-      // Desktop About → left side (left 28%, top 55%), scale 0.60
-      const tgtLeft  = isMobile ? lerp(50, 50, t)       : lerp(48.5, 28, t);
-      const tgtTop   = isMobile ? lerp(106, 88, t)      : lerp(108, 55, t);
-      const tgtScale = isMobile ? lerp(0.32, 0.42, t)   : lerp(1, 0.60, t);
-      const tgtHud   = 1 - clamp(raw / 0.45, 0, 1); // fades to 0 at scroll=0.45
+      const raw    = clamp(scrollY / Math.max(curVh, 1), 0, 1);
+      const t      = easeInOutCubic(raw);
+      const tgtHud = 1 - clamp(raw / 0.45, 0, 1);
 
-      // Lerp toward targets
-      curLeft  += (tgtLeft  - curLeft)  * LERPF;
-      curTop   += (tgtTop   - curTop)   * LERPF;
-      curScale += (tgtScale - curScale) * LERPF;
-      curHud   += (tgtHud   - curHud)   * LERPF;
+      let tgtX, tgtY, tgtScale;
 
-      // Write directly to DOM — no React re-render
-      if (earthRef.current) {
-        if (isMobile) {
-          // On mobile, left% would be wrong because translate(-50%) shifts by half
-          // of the 820px container (410px), not half the scaled visual size.
-          // Use px so the Earth truly centers on screen.
-          earthRef.current.style.left      = `${window.innerWidth / 2}px`;
-        } else {
-          earthRef.current.style.left      = `${curLeft}%`;
+      if (isMobile) {
+        // MOBILE LOGIC
+        // Base width is 820px. We want visual size 311px, so scale is 311/820 = 0.38
+        tgtScale = 0.38;
+        tgtX = 0; // Always perfectly horizontally centered
+
+        // At t=0 (Hero): We want the Earth center at the bottom edge.
+        // Bottom edge Y = curVh/2.
+        const heroY = curVh / 2;
+        
+        // At t=1 (About): We want the Earth in the top area (y = -curVh/2 + ~200px)
+        const aboutY = -curVh / 2 + 200;
+
+        tgtY = lerp(heroY, aboutY, t);
+
+        // Keep it fixed in About section by absorbing scroll
+        if (scrollY > curVh) {
+          tgtY -= (scrollY - curVh);
         }
-        earthRef.current.style.top       = `${curTop}%`;
-        earthRef.current.style.transform = `translate(-50%, -50%) scale(${curScale})`;
+      } else {
+        // DESKTOP LOGIC
+        tgtX = lerp(0, -22, t); // Moves left in vw
+        tgtY = lerp(curVh * 0.6, -curVh * 0.04, t); // Moves from bottom-center to center-left
+        tgtScale = lerp(1, 0.60, t);
+
+        if (scrollY > curVh) {
+          tgtY -= (scrollY - curVh);
+        }
       }
+
+      if (firstTick) {
+        curX = tgtX;
+        curY = tgtY;
+        curScale = tgtScale;
+        curHud = tgtHud;
+        firstTick = false;
+      } else {
+        curX     += (tgtX - curX) * LERPF;
+        curY     += (tgtY - curY) * LERPF;
+        curScale += (tgtScale - curScale) * LERPF;
+        curHud   += (tgtHud - curHud) * LERPF;
+      }
+
+      if (earthRef.current) {
+        // Master positioning logic:
+        // Div is at left:50%, top:50%. 
+        // We use translate(-50%, -50%) to perfectly center it.
+        // Then we add our X (vw) and Y (px) offsets.
+        const xOffset = isMobile ? '0px' : `${curX}vw`;
+        earthRef.current.style.transform = `translate(-50%, -50%) translate(${xOffset}, ${curY}px)`;
+      }
+
+      if (inner) {
+        // Inner scales from the center without affecting layout
+        inner.style.transform = `translate(-50%, -50%) scale(${curScale})`;
+      }
+
       if (hudRef.current) {
         hudRef.current.style.opacity = `${clamp(curHud, 0, 1)}`;
       }
+
       rafId = requestAnimationFrame(tick);
     };
 
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
-  }, []); // runs once — no deps needed since we read from DOM directly
+  }, []);
 
   return { earthRef, hudRef };
 }

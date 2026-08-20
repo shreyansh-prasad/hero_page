@@ -68,15 +68,23 @@ export default function AboutSection() {
 
       {/*
         MOBILE LAYOUT (hidden on md+)
-        Structure: section label -> Earth globe -> connector line -> heading -> body -> HUD metadata
+        The fixed Earth (from page.tsx) scrolls into this section.
+        Zone 1 = visual spacer so the Earth appears in the top half
+        Zone 2 = heading + body text + metadata
       */}
-      <div className="md:hidden flex flex-col" style={{ minHeight: '100svh', position: 'relative', zIndex: 10 }}>
+      <div className="md:hidden" style={{ position: 'relative', zIndex: 10 }}>
 
-        {/* Top zone: label + Earth */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '60px' }}>
-
+        {/* Zone 1: 58vh spacer — Earth animates into view in this zone */}
+        <div style={{
+          height: '58vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          paddingTop: '28px',
+        }}>
           {/* Section label */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <svg width="7" height="7" viewBox="0 0 10 10" fill="none" aria-hidden>
               <rect width="3" height="3" fill="#60A5FA" className="animate-pulse"/>
               <rect y="7" width="3" height="3" fill="#60A5FA"/>
@@ -87,18 +95,17 @@ export default function AboutSection() {
             <div style={{ width: '44px', height: '1px', background: 'rgba(96,165,250,0.18)' }} />
           </div>
 
-
-
-          {/* Vertical connector */}
+          {/* Vertical connector from zone 1 into zone 2 */}
           <div style={{
-            width: '1px', height: '32px',
-            background: 'linear-gradient(to bottom, rgba(96,165,250,0.4), transparent)',
+            flex: 1,
+            width: '1px',
             marginTop: '20px',
+            background: 'linear-gradient(to bottom, rgba(96,165,250,0.4), transparent)',
           }} />
         </div>
 
-        {/* Text zone */}
-        <div style={{ padding: '18px 28px 52px 28px', display: 'flex', flexDirection: 'column' }}>
+        {/* Zone 2: Text content */}
+        <div style={{ padding: '0 28px 52px 28px', display: 'flex', flexDirection: 'column' }}>
 
           {/* Heading */}
           <div style={{ marginBottom: '20px', position: 'relative', paddingLeft: '16px' }}>

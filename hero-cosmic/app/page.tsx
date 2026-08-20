@@ -42,43 +42,49 @@ export default function Home() {
       {/* ── Fixed cosmic background (stars, nebula, HUD) ── */}
       <HeroBackground hudRef={hudRef} />
 
-      {/* ── Fixed Earth (z-30) — above About Section and HeroBackground ── */}
+      {/*
+        ── Fixed Earth ──
+        We use a single wrapper.
+        Mobile: 311x311, Desktop: 820x820.
+        Both use standard Tailwind left-1/2 -translate-x-1/2 for bulletproof horizontal centering.
+      */}
       <div
         ref={earthRef}
-        className="fixed z-[30] pointer-events-none"
+        className="fixed z-30 pointer-events-none will-change-transform"
         style={{
           width: '820px',
           height: '820px',
-          /* left/top/transform are set immediately by useScrollEarth hook on mount */
           left: '50%',
-          top: '200%',
-          transform: 'translate(-50%, -50%) scale(0)',
-          willChange: 'transform, left, top',
+          top: '50%',
+          transform: 'translate(-50%, -50%)', // Default desktop center
         }}
       >
-        {/* Atmospheric glow halo — sits behind the sphere, positioned slightly larger */}
+        {/* Inner canvas that handles scaling */}
         <div
-          aria-hidden
+          data-earth-inner
+          className="absolute w-full h-full pointer-events-none"
           style={{
-            position: 'absolute',
-            inset: '-18px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(40,100,255,0.18) 0%, rgba(20,60,200,0.08) 50%, transparent 75%)',
-            filter: 'blur(16px)',
-            zIndex: 0,
-            pointerEvents: 'none',
-          }}
-        />
-        {/* WebGL canvas */}
-        <div
-          style={{
-            position: 'relative',
-            width:  '100%',
-            height: '100%',
-            zIndex: 1,
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%) scale(1)', // Hook drives this
+            transformOrigin: 'center center',
           }}
         >
-          <HeroEarth />
+          {/* Atmospheric glow halo */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: '-18px',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(40,100,255,0.20) 0%, rgba(20,60,200,0.08) 50%, transparent 75%)',
+              filter: 'blur(20px)',
+              zIndex: 0,
+            }}
+          />
+          <div className="relative w-full h-full z-10">
+            <HeroEarth />
+          </div>
         </div>
       </div>
 

@@ -217,7 +217,7 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
         {/* ──── MOBILE HUD LAYOUT ──── */}
         
         {/* Mobile Left Data Block (below logo) */}
-        <div className="flex md:hidden absolute top-[26vh] left-[6vw] right-[6vw] flex-col z-[15] pointer-events-none">
+        <div className="flex md:hidden absolute top-[42vh] left-[6vw] right-[6vw] flex-col z-[15] pointer-events-none">
           <div className="flex flex-col relative pl-4 py-1 border-l border-blue-400/40">
             <div className="absolute -left-[1px] top-0 w-[2px] h-2 bg-blue-400"></div>
             <div className="absolute -left-[1px] bottom-0 w-[2px] h-2 bg-blue-400"></div>
