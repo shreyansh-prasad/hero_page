@@ -74,9 +74,9 @@ export default function AboutSection() {
       */}
       <div className="md:hidden" style={{ position: 'relative', zIndex: 10 }}>
 
-        {/* Zone 1: 58vh spacer — Earth animates into view in this zone */}
+        {/* Zone 1: 65vh spacer — Earth animates into this zone from the bottom */}
         <div style={{
-          height: '58vh',
+          height: '65vh',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',

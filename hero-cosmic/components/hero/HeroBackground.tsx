@@ -150,13 +150,9 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
 
         {/* SHUNYA Logo */}
         <div
+          className="absolute left-1/2 -translate-x-1/2 w-full h-[150px] md:h-[clamp(200px,35vw,550px)]"
           style={{
-            position: 'absolute',
-            top: '3vh',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '100vw',
-            height: 'clamp(200px, 35vw, 550px)',
+            top: '5vh',
             filter: 'brightness(0) invert(1) drop-shadow(0 0 18px rgba(255,255,255,0.35)) drop-shadow(0 0 50px rgba(100,180,255,0.18))',
             clipPath: 'polygon(0 0, 100% 0, 100% 88%, 0 88%)',
           }}
@@ -216,62 +212,65 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
 
         {/* ──── MOBILE HUD LAYOUT ──── */}
         
-        {/* Mobile Left Data Block (below logo) */}
-        <div className="flex md:hidden absolute top-[42vh] left-[6vw] right-[6vw] flex-col z-[15] pointer-events-none">
-          <div className="flex flex-col relative pl-4 py-1 border-l border-blue-400/40">
-            <div className="absolute -left-[1px] top-0 w-[2px] h-2 bg-blue-400"></div>
-            <div className="absolute -left-[1px] bottom-0 w-[2px] h-2 bg-blue-400"></div>
-            
-            <div className="flex items-center gap-2 mb-2 opacity-80">
-              <svg width="6" height="6" viewBox="0 0 10 10" fill="none" className="animate-pulse"><rect width="3" height="3" fill="#60A5FA"/><rect y="7" width="3" height="3" fill="#60A5FA"/></svg>
-              <span style={{ fontFamily: 'var(--font-corpta), sans-serif' }} className="text-[0.45rem] tracking-[0.4em] text-blue-300 uppercase">Archive // 01</span>
-            </div>
-
-            <p className="text-left"
-               style={{
-                 fontFamily: 'var(--font-corpta), sans-serif',
-                 fontSize: '0.65rem',
-                 fontWeight: 600,
-                 letterSpacing: '0.2em',
-                 lineHeight: '1.6',
-                 color: 'rgba(230,240,255,0.95)',
-                 textTransform: 'uppercase',
-                 textShadow: '0 0 12px rgba(96, 165, 250, 0.4)'
-               }}>
-              For decades, we built machines<br/>to master nature.
-            </p>
-            <p className="text-left mt-2 max-w-[280px]"
-               style={{
-                 fontFamily: 'var(--font-corpta), sans-serif',
-                 fontSize: '0.55rem',
-                 fontWeight: 500,
-                 letterSpacing: '0.15em',
-                 lineHeight: '1.8',
-                 color: 'rgba(160,200,255,0.7)',
-                 textTransform: 'uppercase',
-               }}>
-              Now, we realize the ultimate technology is the ecosystem itself. Welcome to the convergence.
-            </p>
+        {/* Mobile Center Data Block (below logo) */}
+        <div className="flex md:hidden absolute top-[28vh] left-[8vw] right-[8vw] flex-col items-center justify-center z-[15] pointer-events-none text-center">
+          <div className="flex items-center justify-center gap-2 mb-3 opacity-80">
+            <div className="w-6 h-[1px] bg-blue-400/60"></div>
+            <svg width="6" height="6" viewBox="0 0 10 10" fill="none" className="animate-pulse"><rect width="3" height="3" fill="#60A5FA"/><rect y="7" width="3" height="3" fill="#60A5FA"/></svg>
+            <span style={{ fontFamily: 'var(--font-corpta), sans-serif' }} className="text-[0.45rem] tracking-[0.4em] text-blue-300 uppercase">Archive // 01</span>
+            <div className="w-6 h-[1px] bg-blue-400/60"></div>
           </div>
+
+          <p style={{
+               fontFamily: 'var(--font-corpta), sans-serif',
+               fontSize: '0.65rem',
+               fontWeight: 600,
+               letterSpacing: '0.2em',
+               lineHeight: '1.6',
+               color: 'rgba(230,240,255,0.95)',
+               textTransform: 'uppercase',
+               textShadow: '0 0 12px rgba(96, 165, 250, 0.4)'
+             }}>
+            For decades, we built machines<br/>to master nature.
+          </p>
+          <p className="mt-3 max-w-[280px]"
+             style={{
+               fontFamily: 'var(--font-corpta), sans-serif',
+               fontSize: '0.55rem',
+               fontWeight: 500,
+               letterSpacing: '0.15em',
+               lineHeight: '1.8',
+               color: 'rgba(160,200,255,0.7)',
+               textTransform: 'uppercase',
+             }}>
+            Now, we realize the ultimate technology is the ecosystem itself. Welcome to the convergence.
+          </p>
         </div>
 
         {/* Mobile Bottom Status Bar */}
-        <div className="flex md:hidden absolute bottom-[5vh] left-[6vw] right-[6vw] justify-between items-end z-[15] pointer-events-none border-b border-blue-400/20 pb-2">
-          <div className="flex flex-col gap-1.5 relative">
-            <div className="absolute -bottom-[9px] left-0 w-1 h-[2px] bg-blue-400/60"></div>
-            <span style={{ fontFamily: 'var(--font-corpta), sans-serif' }} className="text-[0.45rem] tracking-[0.4em] text-blue-400 uppercase">Status</span>
-            <span style={{ fontFamily: 'var(--font-corpta), sans-serif', fontSize: '0.55rem', fontWeight: 600, letterSpacing: '0.25em', color: 'rgba(230,240,255,0.9)', textShadow: '0 0 10px rgba(96,165,250,0.5)', textTransform: 'uppercase' }}>
-              Convergence
-            </span>
-          </div>
+        <div className="flex md:hidden absolute bottom-[4vh] left-0 right-0 justify-center items-end z-[15] pointer-events-none pb-2">
           
-          <div className="flex flex-col items-end gap-1.5 relative text-right">
-            <div className="absolute -bottom-[9px] right-0 w-1 h-[2px] bg-blue-400/60"></div>
-            <span style={{ fontFamily: 'var(--font-corpta), sans-serif' }} className="text-[0.45rem] tracking-[0.4em] text-blue-400 uppercase">Parameters</span>
-            <span style={{ fontFamily: 'var(--font-corpta), sans-serif', fontSize: '0.5rem', fontWeight: 600, letterSpacing: '0.25em', color: 'rgba(230,240,255,0.9)', textShadow: '0 0 10px rgba(96,165,250,0.5)', textTransform: 'uppercase' }}>
-              Logic · Life
-            </span>
+          <div className="flex items-end justify-between w-[85vw] border-b border-blue-400/20 pb-2 relative">
+            {/* Left corner accent */}
+            <div className="absolute -bottom-[1px] left-0 w-2 h-[2px] bg-blue-400/60"></div>
+            {/* Right corner accent */}
+            <div className="absolute -bottom-[1px] right-0 w-2 h-[2px] bg-blue-400/60"></div>
+
+            <div className="flex flex-col text-left">
+              <span style={{ fontFamily: 'var(--font-corpta), sans-serif' }} className="text-[0.45rem] tracking-[0.4em] text-blue-400 uppercase mb-1">Status</span>
+              <span style={{ fontFamily: 'var(--font-corpta), sans-serif', fontSize: '0.55rem', fontWeight: 600, letterSpacing: '0.25em', color: 'rgba(230,240,255,0.9)', textShadow: '0 0 10px rgba(96,165,250,0.5)', textTransform: 'uppercase' }}>
+                Convergence
+              </span>
+            </div>
+            
+            <div className="flex flex-col text-right">
+              <span style={{ fontFamily: 'var(--font-corpta), sans-serif' }} className="text-[0.45rem] tracking-[0.4em] text-blue-400 uppercase mb-1">Parameters</span>
+              <span style={{ fontFamily: 'var(--font-corpta), sans-serif', fontSize: '0.5rem', fontWeight: 600, letterSpacing: '0.25em', color: 'rgba(230,240,255,0.9)', textShadow: '0 0 10px rgba(96,165,250,0.5)', textTransform: 'uppercase' }}>
+                Logic · Life
+              </span>
+            </div>
           </div>
+
         </div>
 
       </div>

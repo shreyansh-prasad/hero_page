@@ -45,22 +45,27 @@ export function useScrollEarth() {
 
       if (isMobile) {
         // MOBILE LOGIC
-        // Base width is 820px. We want visual size 311px, so scale is 311/820 = 0.38
-        tgtScale = 0.38;
-        tgtX = 0; // Always perfectly horizontally centered
-
-        // At t=0 (Hero): We want the Earth center at the bottom edge.
-        // Bottom edge Y = curVh/2.
-        const heroY = curVh / 2;
+        // "upper part of earth should be at bottom centre , covering 80 % of bottom area"
+        const heroScale = 1.0; 
         
-        // At t=1 (About): We want the Earth in the top area (y = -curVh/2 + ~200px)
-        const aboutY = -curVh / 2 + 200;
+        // At t=0 (Hero): We want the top of the 820px Earth to be at 80% of the viewport height.
+        // Screen center is curVh / 2.
+        // We want: (curVh / 2) + heroY - 410 = curVh * 0.8
+        // heroY = curVh * 0.8 + 410 - curVh / 2 = curVh * 0.3 + 410
+        const heroY = (curVh * 0.3) + 410;
 
+        // At t=1 (About): Earth shrinks and moves up.
+        const aboutScale = 0.45;
+        // Let's place it slightly above center for the About section
+        const aboutY = -curVh * 0.1;
+
+        tgtScale = lerp(heroScale, aboutScale, t);
+        tgtX = 0; // Always perfectly horizontally centered
         tgtY = lerp(heroY, aboutY, t);
 
-        // Keep it fixed in About section by absorbing scroll
+        // "earth should not be static": make it scroll up naturally as the user reads About section
         if (scrollY > curVh) {
-          tgtY -= (scrollY - curVh);
+          tgtY -= (scrollY - curVh) * 0.85; // Slight parallax scroll away
         }
       } else {
         // DESKTOP LOGIC
