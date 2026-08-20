@@ -38,7 +38,7 @@ export default function Home() {
     });
 
   return (
-    <main className="relative w-screen bg-black">
+    <main className="relative w-full overflow-hidden bg-black">
       {/* ── Fixed cosmic background (stars, nebula, HUD) ── */}
       <HeroBackground hudRef={hudRef} />
 

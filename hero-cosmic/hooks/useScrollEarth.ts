@@ -45,13 +45,12 @@ export function useScrollEarth() {
 
       if (isMobile) {
         // MOBILE LOGIC
-        const heroScale = 0.65; 
+        const heroScale = 0.55; 
         
-        // "push it right , and to the bottom , till only uperr half of earth is visible"
-        // Center exactly at bottom edge (curVh) -> relative to 50%, heroY = curVh * 0.5
+        // "make earth smaller for mobile view and shift it right , so that its centre is propperely alligned to the center line"
+        // Since we fixed the left-offset bug, heroX = 0 will make it perfectly symmetrical to the center line.
         const heroY = curVh * 0.5;
-        // Push it right slightly by 6vw to compensate for the left-side shadow without overlapping text
-        const heroX = 6;
+        const heroX = 0;
 
         // At t=1 (About): Earth shrinks and moves up.
         const aboutScale = 0.45;
