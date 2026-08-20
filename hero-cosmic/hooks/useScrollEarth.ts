@@ -45,14 +45,14 @@ export function useScrollEarth() {
 
       if (isMobile) {
         // MOBILE LOGIC
-        // "upper part of earth should be at bottom centre , covering 80 % of bottom area"
-        const heroScale = 1.0; 
+        // "make the earth smaller and push it uppward"
+        const heroScale = 0.5; 
         
         // At t=0 (Hero): We want the top of the 820px Earth to be at 80% of the viewport height.
-        // Screen center is curVh / 2.
-        // We want: (curVh / 2) + heroY - 410 = curVh * 0.8
-        // heroY = curVh * 0.8 + 410 - curVh / 2 = curVh * 0.3 + 410
-        const heroY = (curVh * 0.3) + 410;
+        // The Earth's scaled radius is 410 * 0.5 = 205px.
+        // We want: (curVh / 2) + heroY - 205 = curVh * 0.8
+        // heroY = curVh * 0.8 + 205 - curVh / 2 = curVh * 0.3 + 205
+        const heroY = (curVh * 0.3) + 205;
 
         // At t=1 (About): Earth shrinks and moves up.
         const aboutScale = 0.45;
