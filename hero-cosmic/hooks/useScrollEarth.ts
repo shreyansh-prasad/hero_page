@@ -55,16 +55,18 @@ export function useScrollEarth() {
 
         // At t=1 (About): Earth shrinks and moves up.
         const aboutScale = 0.45;
-        const aboutY = -curVh * 0.1;
+        // Position it in the upper part of the About page
+        const aboutY = -curVh * 0.25;
         const aboutX = 0; // Re-center in the About section
 
         tgtScale = lerp(heroScale, aboutScale, t);
         tgtX = lerp(heroX, aboutX, t);
         tgtY = lerp(heroY, aboutY, t);
 
-        // "earth should not be static": make it scroll up naturally as the user reads About section
+        // Remove the extreme scroll subtraction so the Earth STAYS visible 
+        // at the top of the About page instead of flying off screen.
         if (scrollY > curVh) {
-          tgtY -= (scrollY - curVh) * 0.85; // Slight parallax scroll away
+          tgtY -= (scrollY - curVh) * 0.15; // Extremely slow parallax so it doesn't vanish
         }
       } else {
         // DESKTOP LOGIC
