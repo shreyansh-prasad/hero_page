@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import LiquidGlassNav from "../components/navigation/LiquidGlassNav";
 
 const corpta = localFont({
   src: "../public/fonts/Corpta.ttf.otf",
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       className={`${corpta.variable} antialiased`}
     >
-      <body className="bg-black text-white overflow-hidden font-corpta">{children}</body>
+      <body className="bg-black text-white overflow-hidden font-corpta"><LiquidGlassNav />{children}</body>
     </html>
   );
 }

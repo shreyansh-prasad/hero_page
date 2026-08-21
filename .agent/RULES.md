@@ -10,6 +10,7 @@
 - Do not silently skip repository inspection.
 - Do not turn a local cursor effect into a global animation.
 - Do not make any further changes to the Earth models, alignments, sizing, or layout; the current layout is final.
+- NEVER push code to GitHub without the user's explicit permission.
 
 ## Visual rules
 - Earth belongs low in the frame.
