@@ -1,0 +1,96 @@
+
+@font-face {
+  font-family: 'Corpta';
+  src: url('../fonts/corpta/Corpta.ttf.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ── Typography Tokens ───────────────────────────────────────────────────── */
+  --font-display: 'Corpta', 'Helvetica Neue', 'Inter', 'Arial Black', sans-serif;
+  --font-ui: 'Corpta', 'Helvetica Neue', 'Inter', system-ui, sans-serif;
+  --font-body: 'Corpta', 'Helvetica Neue', 'Inter', system-ui, sans-serif;
+
+  /* ── Deep Forest & Organic Foundations ─────────────────────────────── */
+  --void-black: #050807; /* Deep organic darkness instead of space black */
+  --void-navy: #07110E;  /* Deep moss underlayer instead of space navy */
+  --void-obsidian: #030403;
+  --star-white: #E8F5E9; /* Pale organic white */
+  --star-dim: #A5D6A7;
+  --star-muted: rgba(165, 214, 167, 0.45);
+
+  /* ── Curated Luxury High-Contrast Headline Colors ──────────────────────── */
+  --headline-zero-day: #FF0055;       /* Cyberpunk Red */
+  --headline-autopilot: #FFB800;      /* Solar Gold */
+  --headline-devlympics: #00FF9D;     /* Neon Emerald */
+  --headline-flow-flux: #FF00FF;      /* Plasma Pink */
+  --headline-hallucination: #D4FF00;  /* Toxic Lime */
+  --headline-caseathon: #FFFFFF;      /* Pure White */
+
+  /* ── Dual-Hemisphere Chromatic Pairings (Left Celestial vs Right HUD) ───── */
+  /* 01. Zero Day */
+  --accent-zero-day-left: #FF0055;
+  --accent-zero-day-right: #9D00FF;
+
+  /* 02. Autopilot */
+  --accent-autopilot-left: #FFB800;
+  --accent-autopilot-right: #FFFFFF;
+
+  /* 03. Devlympics */
+  --accent-devlympics-left: #00FF9D;
+  --accent-devlympics-right: #0033FF;
+
+  /* 04. Flow in Flux */
+  --accent-flow-flux-left: #FF00FF;
+  --accent-flow-flux-right: #00F0FF;
+
+  /* 05. Hallucination Hunt */
+  --accent-hallucination-left: #D4FF00;
+  --accent-hallucination-right: #FF5500;
+
+  /* 06. Case-a-thon */
+  --accent-caseathon-left: #FFFFFF;
+  --accent-caseathon-right: #0066FF;
+
+  /* Legacy Fallback Accents */
+  --accent-zero-day: #FF0055;
+  --accent-autopilot: #FFB800;
+  --accent-devlympics: #00FF9D;
+  --accent-flow-flux: #FF00FF;
+  --accent-hallucination: #D4FF00;
+  --accent-caseathon: #FFFFFF;
+
+  /* ── Cellular Membrane & Glass Tokens ─────────────────────────────── */
+  --glass-surface: rgba(7, 17, 14, 0.65); /* Organic tint */
+  --glass-surface-hover: rgba(12, 28, 23, 0.85);
+  --glass-border: rgba(232, 245, 233, 0.08); /* Extremely delicate membrane border */
+  --glass-border-hover: rgba(232, 245, 233, 0.25);
+  --glass-highlight: rgba(255, 255, 255, 0.15);
+  --glass-blur: 32px; /* Increased blur for fluid feel */
+
+  /* ── Holographic VFX Tokens ─────────────────────────────────────────────── */
+  --holo-scanline: rgba(255, 255, 255, 0.04);
+  --holo-glow-spread: 30px;
+  --holo-grid-size: 32px;
+
+  /* ── Liquid Glass & Dynamic Island Tokens ────────────────────────────── */
+  --liquid-glass-surface: rgba(8, 11, 24, 0.65);
+  --liquid-glass-surface-expanded: rgba(6, 8, 18, 0.85);
+  --liquid-glass-border: rgba(245, 247, 255, 0.22);
+  --liquid-metal-rim: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.08) 45%, rgba(0, 240, 255, 0.35) 100%);
+  --liquid-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0) 100%);
+  --liquid-glider-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 100%);
+  --island-ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --island-ease-liquid: cubic-bezier(0.19, 1, 0.22, 1);
+  --island-glow: rgba(0, 240, 255, 0.3);
+
+  /* ── Motion & Transition Tokens ─────────────────────────────────────────── */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);    /* luxury deceleration */
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);   /* airlock sweep */
+  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+  --dur-crossfade: 700ms;
+  --dur-curtain: 900ms;
+  --dur-press: 180ms;
+}

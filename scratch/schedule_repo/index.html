@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHUNYA — Living System Interface</title>
+  <meta name="description" content="Shunya 2026: Symbiosis. Exploring how emerging technologies coexist with natural ecosystems.">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css?v=7">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- GSAP & ScrollTrigger CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  
+  <!-- Lenis for smooth scrolling -->
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+</head>
+<body>
+  <!-- Liquid Glass Optical Filters -->
+  <svg style="position:absolute; width:0; height:0; pointer-events:none;" aria-hidden="true">
+    <defs>
+      <filter id="liquid-glass-lens" x="-20%" y="-20%" width="140%" height="140%">
+        <!-- Subtle noise for optical scattering -->
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise" />
+        <!-- Displace the backdrop to simulate refraction (Lens distortion) -->
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G" result="refracted" />
+        <!-- Very light blur so the background remains clearly visible -->
+        <feGaussianBlur in="refracted" stdDeviation="2" result="blurred" />
+        <!-- Boost contrast/saturation slightly to simulate glass density -->
+        <feComponentTransfer in="blurred">
+          <feFuncR type="linear" slope="1.15" />
+          <feFuncG type="linear" slope="1.15" />
+          <feFuncB type="linear" slope="1.15" />
+        </feComponentTransfer>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- Corner Navigation -->
+  <header class="header">
+    <a href="#" class="header__brand header__logo">SHUNYA</a>
+    <div class="header__date" style="font-family: var(--font-ui); font-size: 0.9rem; letter-spacing: 0.25em; font-weight: 700; color: var(--star-white);">2026</div>
+  </header>
+
+  <!-- Starfield Canvas — fixed background, above all UI via mix-blend-mode:screen -->
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <main id="scroll-container"></main>
+
+  <div id="dynamic-island-root"></div>
+
+  <div id="details-root"></div>
+
+  <footer class="footer">
+    <div class="footer__left">GDG</div>
+    
+    <div class="footer__right">NSUT</div>
+  </footer>
+
+  <script type="module" src="js/main.js?v=11"></script>
+</body>
+</html>

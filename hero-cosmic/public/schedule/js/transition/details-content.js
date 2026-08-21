@@ -1,0 +1,88 @@
+/**
+ * Details Content Module — Luxury Space Briefing View
+ * Renders detail view template: headline, description, Space Mono metadata list, close control.
+ */
+
+export function renderDetails(event) {
+  const root = document.getElementById('details-root');
+  if (!root) {
+    console.error('[DetailsContent] #details-root container not found in DOM.');
+    return null;
+  }
+
+  const headlineColor = event.headlineColor || event.accent || 'var(--star-white)';
+  const primaryAccent = event.accent || headlineColor;
+  const format = event.format || 'Hybrid &bull; Prompting & Code Battles';
+  const teamSize = event.teamSize || '1 &ndash; 4 Operatives';
+  const duration = event.duration || 'Full Night Sprint';
+  const prize = event.prize || '$10,000 Prize Pool + Grants';
+  const description = event.description || 'Deep-space challenge briefing and tactical evaluation criteria are classified until mission briefing.';
+  const tags = event.tags ? event.tags.slice(0, 3) : ['AI Challenge', 'Special Ops'];
+
+  root.innerHTML = `
+    <div class="details-seam-sweep" id="details-seam" style="--event-accent: ${headlineColor};"></div>
+    <article class="details-view" id="details-view-article" style="--event-accent: ${headlineColor};">
+      <div class="details-view__backdrop-glow" aria-hidden="true" style="background: radial-gradient(circle at center, ${primaryAccent}18 0%, transparent 70%);"></div>
+      
+      <div class="details-view__container">
+        <header class="details-view__header">
+          <div class="details-view__tags">
+            <span class="details-view__badge" style="color: ${headlineColor}; border-color: ${headlineColor}66;">MISSION BRIEFING</span>
+            ${tags.map(t => `<span class="details-view__tag">${t}</span>`).join('')}
+          </div>
+          <button class="details-view__close" id="details-close-btn" type="button" aria-label="Close details">
+            <span class="details-view__close-text">CLOSE [ESC]</span>
+            <span class="details-view__close-icon">&times;</span>
+          </button>
+        </header>
+
+        <div class="details-view__hero">
+          <h2 class="details-view__title" style="color: ${headlineColor}; text-shadow: 0 0 50px ${headlineColor}44;">
+            ${event.name}
+          </h2>
+          <p class="details-view__desc">${description}</p>
+        </div>
+
+        <div class="details-view__meta-grid">
+          <div class="details-view__meta-card">
+            <span class="details-view__meta-label">FORMAT</span>
+            <span class="details-view__meta-value">${format}</span>
+          </div>
+          <div class="details-view__meta-card">
+            <span class="details-view__meta-label">TEAM SIZE</span>
+            <span class="details-view__meta-value">${teamSize}</span>
+          </div>
+          <div class="details-view__meta-card">
+            <span class="details-view__meta-label">DURATION</span>
+            <span class="details-view__meta-value">${duration}</span>
+          </div>
+          <div class="details-view__meta-card">
+            <span class="details-view__meta-label">REWARDS & PRIZE</span>
+            <span class="details-view__meta-value" style="color: ${headlineColor}; font-weight: 700;">${prize}</span>
+          </div>
+        </div>
+
+        <div class="details-view__footer">
+          <span class="details-view__footer-note">SECURITY TOKEN: SHUNYA-${(event.id || 'VOID').toUpperCase()}-2026</span>
+          <button class="details-view__register-btn" type="button" style="--btn-accent: ${headlineColor};">
+            <span>REGISTER FOR BATTLE</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+      </div>
+    </article>
+  `;
+
+  return {
+    view: root.querySelector('.details-view'),
+    seam: root.querySelector('.details-seam-sweep'),
+    closeBtn: root.querySelector('#details-close-btn')
+  };
+}
+
+export function clearDetails() {
+  const root = document.getElementById('details-root');
+  if (root) {
+    root.innerHTML = '';
+  }
+}
