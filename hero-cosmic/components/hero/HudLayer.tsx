@@ -132,8 +132,8 @@ export default function HudLayer({ reducedMotion = false }: { reducedMotion?: bo
       line.style.opacity = '0.9';
       line.style.stroke = SCAN_COLOR;
 
-      // Force reflow to apply initial state
-      line.getBoundingClientRect();
+      // Force reflow to apply initial state without full layout thrashing
+      void line.clientLeft;
 
       line.style.transition = 'stroke-dashoffset 180ms ease-out';
       line.style.strokeDashoffset = '0';
@@ -188,6 +188,7 @@ export default function HudLayer({ reducedMotion = false }: { reducedMotion?: bo
       preserveAspectRatio="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
+      style={{ contain: 'strict' }}
     >
       {/* Vertical grid lines */}
       {colX.map((x, i) => (

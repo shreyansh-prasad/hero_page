@@ -53,13 +53,15 @@ const pillBase: React.CSSProperties = {
   borderRadius: '999px',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
+  width: 'max-content',
+  contain: 'layout paint', // Isolates layout recalculations from the rest of the DOM
+  willChange: 'width, transform',
 
   /* ── Motion: all transitions via CSS only (no new dep) ── */
   transition: [
-    'width 320ms cubic-bezier(0.4,0,0.2,1)',
-    'max-width 320ms cubic-bezier(0.4,0,0.2,1)',
     'padding 320ms cubic-bezier(0.4,0,0.2,1)',
     'box-shadow 200ms ease',
+    'border-radius 320ms ease',
   ].join(', '),
 
   display: 'flex',
@@ -115,10 +117,11 @@ const navLinksWrapper: React.CSSProperties = {
   alignItems: 'center',
   padding: '0 16px',
   gap: '12px',
+  flexShrink: 0,
 };
 
 const navLinkBase: React.CSSProperties = {
-  padding: '14px 28px',
+  padding: '14px 20px',
   fontSize: '0.9rem',
   letterSpacing: '0.25em',
   textTransform: 'uppercase',
@@ -130,6 +133,7 @@ const navLinkBase: React.CSSProperties = {
   borderRadius: '999px',
   transition: 'color 150ms ease, background 150ms ease',
   lineHeight: 1,
+  flexShrink: 0,
 };
 
 const navLinkHover: React.CSSProperties = {
@@ -140,6 +144,7 @@ const navLinkHover: React.CSSProperties = {
 /* ── Component ── */
 export default function LiquidGlassNav() {
   const [activeSection, setActiveSection] = useState<SectionId>('home');
+  const [inAbout, setInAbout] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [hoveredLink, setHoveredLink] = useState<string | null>(null);
   const pillRef = useRef<HTMLDivElement>(null);
@@ -184,6 +189,16 @@ export default function LiquidGlassNav() {
       obs.observe(el);
       observers.push(obs);
     });
+
+    // Also observe the 'about' section specifically for the logo text change
+    const aboutEl = document.getElementById('about');
+    if (aboutEl) {
+      const aboutObs = new IntersectionObserver(([entry]) => {
+        setInAbout(entry.isIntersecting);
+      }, { threshold: 0.3 });
+      aboutObs.observe(aboutEl);
+      observers.push(aboutObs);
+    }
 
     return () => observers.forEach((o) => o.disconnect());
   }, []);
@@ -242,8 +257,8 @@ export default function LiquidGlassNav() {
     display: isEffectivelyExpanded ? 'flex' : 'none',
     flexDirection: isMobile ? 'column' : 'row',
     height: isMobile ? 'auto' : '72px',
-    padding: isMobile ? '24px 0' : '0',
-    minWidth: isMobile ? '220px' : 'auto',
+    padding: isMobile ? '32px 24px' : '0',
+    minWidth: isMobile ? '260px' : 'auto',
   };
 
   const dynamicCompactInner: React.CSSProperties = {
@@ -261,15 +276,21 @@ export default function LiquidGlassNav() {
   const dynamicLogoBlock: React.CSSProperties = {
     ...logoBlock,
     borderRight: isMobile ? 'none' : logoBlock.borderRight,
-    borderBottom: isMobile ? '1px solid rgba(255,255,255,0.08)' : 'none',
-    padding: isMobile ? '0 0 16px 0' : logoBlock.padding,
+    borderBottom: isMobile ? '1px solid rgba(255,255,255,0.06)' : 'none',
+    padding: isMobile ? '0 0 24px 0' : logoBlock.padding,
     width: isMobile ? '100%' : 'auto',
+  };
+
+  const dynamicLogoText: React.CSSProperties = {
+    ...logoText,
+    fontSize: isMobile ? '1.1rem' : logoText.fontSize,
   };
 
   const dynamicNavLinksWrapper: React.CSSProperties = {
     ...navLinksWrapper,
     flexDirection: isMobile ? 'column' : 'row',
-    padding: isMobile ? '16px 0 0 0' : navLinksWrapper.padding,
+    padding: isMobile ? '24px 0 0 0' : navLinksWrapper.padding,
+    gap: isMobile ? '12px' : navLinksWrapper.gap,
     width: isMobile ? '100%' : 'auto',
   };
 
@@ -290,7 +311,32 @@ export default function LiquidGlassNav() {
     >
       {/* ── Compact State ── */}
       <div style={dynamicCompactInner}>
-        <span style={dynamicActiveLabelStyle}>{activeLabelText}</span>
+        {activeSection === 'home' || inAbout ? (
+          <span style={{ ...dynamicActiveLabelStyle, display: 'flex', alignItems: 'center', willChange: 'width' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                maxWidth: inAbout ? '115px' : '0px',
+                transition: 'max-width 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+                willChange: 'max-width',
+              }}
+            >
+              <span
+                style={{
+                  overflow: 'hidden',
+                  opacity: inAbout ? 1 : 0,
+                  transition: 'opacity 400ms ease',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ABOUT&nbsp;
+              </span>
+            </span>
+            <span>SHUNYA</span>
+          </span>
+        ) : (
+          <span style={dynamicActiveLabelStyle}>{activeLabelText}</span>
+        )}
       </div>
 
       {/* ── Expanded State ── */}
@@ -307,7 +353,28 @@ export default function LiquidGlassNav() {
           tabIndex={0}
           onKeyDown={(e) => e.key === 'Enter' && navigate('home')}
         >
-          <span style={logoText}>Shunya</span>
+          <span style={{ ...dynamicLogoText, display: 'flex', alignItems: 'center', willChange: 'width' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                maxWidth: inAbout ? '115px' : '0px',
+                transition: 'max-width 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+                willChange: 'max-width',
+              }}
+            >
+              <span
+                style={{
+                  overflow: 'hidden',
+                  opacity: inAbout ? 1 : 0,
+                  transition: 'opacity 400ms ease',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ABOUT&nbsp;
+              </span>
+            </span>
+            <span>SHUNYA</span>
+          </span>
         </div>
 
         {/* Nav links — all except Home */}
@@ -317,11 +384,16 @@ export default function LiquidGlassNav() {
               key={s.id}
               style={{
                 ...navLinkBase,
-                ...(hoveredLink === s.id ? navLinkHover : {}),
-                width: isMobile ? '80%' : 'auto',
+                ...(hoveredLink === s.id && !isMobile ? navLinkHover : {}),
+                ...(activeSection === s.id && isMobile ? { color: '#ffffff', background: 'rgba(255,255,255,0.04)' } : {}),
+                width: isMobile ? '100%' : 'auto',
+                padding: isMobile ? '16px 20px' : navLinkBase.padding,
+                borderRadius: isMobile ? '16px' : navLinkBase.borderRadius,
+                fontSize: isMobile ? '0.95rem' : navLinkBase.fontSize,
+                letterSpacing: isMobile ? '0.2em' : navLinkBase.letterSpacing,
               }}
-              onMouseEnter={() => setHoveredLink(s.id)}
-              onMouseLeave={() => setHoveredLink(null)}
+              onMouseEnter={() => !isMobile && setHoveredLink(s.id)}
+              onMouseLeave={() => !isMobile && setHoveredLink(null)}
               onClick={() => navigate(s.id)}
               tabIndex={0}
             >

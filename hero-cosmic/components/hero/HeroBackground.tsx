@@ -40,7 +40,7 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
       `}</style>
 
       {/* ── 1. Star field (z-2) — Dual Parallax Layers ── */}
-      <div className="absolute inset-0 z-[2] pointer-events-none">
+      <div className="absolute inset-0 z-[2] pointer-events-none" style={{ contain: 'layout paint' }}>
         {/* Layer 1: Deep stars (slower parallax) */}
         <div aria-hidden style={{
           position: 'absolute', inset: '-10%', zIndex: 0,
@@ -69,18 +69,24 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
 
       {/* ── 2. Nebula (z-3) ── */}
       <div
-        className="absolute inset-0 z-[3]"
-        style={{ transform: `translate3d(calc(var(--mouse-x, 0) * -50px), calc(var(--mouse-y, 0) * -50px), 0)` }}
+        className="absolute inset-0 z-[3] mix-blend-screen"
+        style={{ 
+          transform: `translate3d(calc(var(--mouse-x, 0) * -50px), calc(var(--mouse-y, 0) * -50px), 0)`,
+          willChange: 'transform',
+          contain: 'layout paint'
+        }}
       >
-        <div className="absolute inset-0 animate-drift">
-          <Image
-            src="/cosmic/rich_green_nebula.png"
-            alt="Nebula"
-            fill
-            className="object-cover opacity-70 mix-blend-screen animate-breathe"
-            style={{ filter: 'contrast(1.5) saturate(1.2) brightness(0.8)' }}
-            unoptimized
-          />
+        {/* The static filter wrapper prevents the GPU from re-rasterizing the filter on every frame of the drift animation */}
+        <div className="absolute inset-0" style={{ filter: 'contrast(1.5) saturate(1.2) brightness(0.8)' }}>
+          <div className="absolute inset-0 animate-drift" style={{ willChange: 'transform' }}>
+            <Image
+              src="/cosmic/rich_green_nebula.png"
+              alt="Nebula"
+              fill
+              className="object-cover opacity-70 animate-breathe"
+              unoptimized
+            />
+          </div>
         </div>
       </div>
 
@@ -102,7 +108,11 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
       <div
         ref={hudRef}
         className="absolute inset-0 z-[40] pointer-events-none"
-        style={{ transform: `translate3d(calc(var(--mouse-x, 0) * -35px), calc(var(--mouse-y, 0) * -35px), 0)` }}
+        style={{ 
+          transform: `translate3d(calc(var(--mouse-x, 0) * -35px), calc(var(--mouse-y, 0) * -35px), 0)`,
+          willChange: 'transform',
+          contain: 'layout paint'
+        }}
       >
         {/* ──── HUD DATA PANELS (4 Corners) ──── */}
         

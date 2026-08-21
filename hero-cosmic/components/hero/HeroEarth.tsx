@@ -31,6 +31,7 @@ function EarthSphere() {
 export default function HeroEarth() {
   return (
     <Canvas
+      dpr={[1, 1.5]}
       camera={{ position: [0, 0, 3.2], fov: 38.5, near: 0.1, far: 100 }}
       gl={{ alpha: true, antialias: true }}
       style={{ background: 'transparent', width: '100%', height: '100%', display: 'block' }}
