@@ -2,12 +2,6 @@
 
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-// @ts-ignore
-import { SplitText } from 'gsap/SplitText';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(SplitText);
-}
 
 interface ScrambledTextProps {
   radius?: number;
@@ -29,53 +23,45 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({
   children
 }) => {
   const rootRef = useRef<HTMLDivElement>(null);
-  const charsRef = useRef<Element[]>([]);
+  const charsRef = useRef<HTMLElement[]>([]);
+  charsRef.current = []; // Clear refs on render
 
   useEffect(() => {
     if (!rootRef.current) return;
-    console.log('ScrambledText mounted, SplitText:', !!SplitText);
 
-    // Wait for a tick to ensure children are rendered
-    const split = new SplitText(rootRef.current.querySelector('p'), {
-      type: 'chars',
-      charsClass: 'char'
-    });
-    charsRef.current = split.chars;
-    console.log('SplitText created chars:', split.chars.length);
-
-    charsRef.current.forEach((c) => {
-      gsap.set(c, {
-        display: 'inline-block',
-        attr: { 'data-content': c.innerHTML }
+    // Cache char positions
+    let charPositions: { x: number; y: number }[] = [];
+    
+    const updatePositions = () => {
+      charPositions = charsRef.current.map((c) => {
+        return {
+          x: c.offsetLeft + c.offsetWidth / 2,
+          y: c.offsetTop + c.offsetHeight / 2
+        };
       });
-    });
-
-    const charPositions = charsRef.current.map((c) => {
-      const el = c as HTMLElement;
-      return {
-        x: el.offsetLeft + el.offsetWidth / 2,
-        y: el.offsetTop + el.offsetHeight / 2
-      };
-    });
+    };
+    
+    // Slight delay to ensure layout is done before capturing positions
+    const timeout = setTimeout(updatePositions, 100);
+    window.addEventListener('resize', updatePositions);
 
     const handleMove = (e: PointerEvent) => {
       if (!rootRef.current) return;
-      
-      // 1 DOM read per move instead of N (prevents layout thrashing)
       const rect = rootRef.current.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
       charsRef.current.forEach((c, i) => {
         const pos = charPositions[i];
+        if (!pos) return;
+
         const dx = mouseX - pos.x;
         const dy = mouseY - pos.y;
         const dist = Math.hypot(dx, dy);
 
         if (dist < radius) {
           if (!gsap.isTweening(c)) {
-            const el = c as HTMLElement;
-            const original = el.dataset.content || '';
+            const original = c.dataset.content || '';
             const proxy = { p: 0 };
             const animDuration = Math.max(0.1, duration * (1 - dist / radius));
             
@@ -85,19 +71,17 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({
               ease: 'none',
               onUpdate: () => {
                 if (proxy.p < 0.9) {
-                  // randomize char based on speed (throttle updates to make it readable)
                   if (Math.random() > speed) {
-                    el.innerHTML = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+                    c.innerHTML = scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
                   }
                 } else {
-                  el.innerHTML = original;
+                  c.innerHTML = original;
                 }
               },
               onComplete: () => {
-                el.innerHTML = original;
+                c.innerHTML = original;
               }
             });
-            // We also need to attach the tween to the element so isTweening(c) works
             gsap.to(c, { duration: animDuration });
           }
         }
@@ -108,21 +92,44 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({
     el.addEventListener('pointermove', handleMove);
 
     return () => {
+      clearTimeout(timeout);
       el.removeEventListener('pointermove', handleMove);
-      split.revert();
+      window.removeEventListener('resize', updatePositions);
     };
   }, [radius, duration, speed, scrambleChars]);
+
+  if (typeof children !== 'string') {
+    return <div className={className} style={style}>{children}</div>;
+  }
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: `
-        .char {
+        .scramble-char {
           will-change: transform;
           display: inline-block;
         }
       `}} />
       <div ref={rootRef} className={`text-block ${className}`} style={{ position: 'relative', ...style }}>
-        <p style={{ margin: 0 }}>{children}</p>
+        <p style={{ margin: 0 }}>
+          {children.split(' ').map((word, wIdx, wordsArr) => (
+            <React.Fragment key={wIdx}>
+              <span style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+                {word.split('').map((char, cIdx) => (
+                  <span
+                    key={cIdx}
+                    ref={(el) => { if (el) charsRef.current.push(el); }}
+                    className="scramble-char"
+                    data-content={char}
+                  >
+                    {char}
+                  </span>
+                ))}
+              </span>
+              {wIdx < wordsArr.length - 1 && ' '}
+            </React.Fragment>
+          ))}
+        </p>
       </div>
     </>
   );
