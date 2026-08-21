@@ -45,6 +45,33 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({
     const timeout = setTimeout(updatePositions, 100);
     window.addEventListener('resize', updatePositions);
 
+    // ── Premium Typewriter Intro Animation ──
+    let hasAnimated = false;
+    gsap.set(charsRef.current, { opacity: 0 });
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !hasAnimated) {
+        hasAnimated = true;
+        observer.disconnect();
+
+        // ── Pure Typewriter Intro Animation ──
+        const tl = gsap.timeline();
+        
+        let cumulativeDelay = 0;
+        
+        charsRef.current.forEach((c) => {
+          // Base speed ~5ms, with random variation up to +10ms for fast organic human typing rhythm
+          const randomDelay = 0.005 + Math.random() * 0.01;
+          cumulativeDelay += randomDelay;
+          
+          // Instant snap to visible (true typewriter)
+          tl.set(c, { opacity: 1 }, cumulativeDelay);
+        });
+      }
+    }, { threshold: 0.25 });
+
+    observer.observe(rootRef.current);
+
     const handleMove = (e: PointerEvent) => {
       if (!rootRef.current) return;
       const rect = rootRef.current.getBoundingClientRect();
@@ -95,6 +122,7 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({
       clearTimeout(timeout);
       el.removeEventListener('pointermove', handleMove);
       window.removeEventListener('resize', updatePositions);
+      observer.disconnect();
     };
   }, [radius, duration, speed, scrambleChars]);
 
