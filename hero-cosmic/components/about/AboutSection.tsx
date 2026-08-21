@@ -114,13 +114,13 @@ export default function AboutSection() {
               background: 'linear-gradient(to bottom, rgba(96,165,250,0.6), transparent)',
             }}/>
             <div style={{
-              fontFamily: FONT, fontSize: 'clamp(2.5rem, 10vw, 3.2rem)',
+              fontFamily: FONT, fontSize: 'clamp(2rem, 8vw, 2.5rem)',
               fontWeight: 700, letterSpacing: '0.05em', lineHeight: 0.95,
               textTransform: 'uppercase', color: 'rgba(230,240,255,0.95)',
               textShadow: '0 0 60px rgba(96,165,250,0.12)', userSelect: 'none',
             }}>About</div>
             <div style={{
-              fontFamily: FONT, fontSize: 'clamp(2.5rem, 10vw, 3.2rem)',
+              fontFamily: FONT, fontSize: 'clamp(2rem, 8vw, 2.5rem)',
               fontWeight: 700, letterSpacing: '0.05em', lineHeight: 1.05,
               textTransform: 'uppercase', color: '#ffffff',
               textShadow: '0 0 40px rgba(96,165,250,0.4), 0 0 90px rgba(96,165,250,0.15)',
@@ -139,10 +139,10 @@ export default function AboutSection() {
             speed={0.15}
             scrambleChars=".:"
             style={{
-              fontFamily: "'Inter', 'Roboto', system-ui, -apple-system, sans-serif",
-              fontWeight: 300, fontSize: '0.93rem', letterSpacing: '0.015em',
-              lineHeight: '1.72', color: 'rgba(220,232,255,0.80)',
-              textTransform: 'none', marginBottom: '28px',
+              fontFamily: FONT,
+              fontWeight: 300, fontSize: '0.62rem', letterSpacing: '0.06em',
+              lineHeight: '2.0', color: 'rgba(220,232,255,0.70)',
+              textTransform: 'uppercase', marginBottom: '28px',
             }}
           >
             {BODY_TEXT}
@@ -216,7 +216,16 @@ export default function AboutSection() {
             duration={2.5}
             speed={0.15}
             scrambleChars=".:"
-            style={{ maxWidth: '760px' }}
+            style={{ 
+              maxWidth: '760px',
+              fontFamily: FONT,
+              fontWeight: 300,
+              fontSize: '0.85rem',
+              letterSpacing: '0.04em',
+              lineHeight: '2.0',
+              color: 'rgba(220,232,255,0.80)',
+              textTransform: 'uppercase'
+            }}
           >
             {BODY_TEXT}
           </ScrambledText>
