@@ -14,6 +14,8 @@ function EarthSphere() {
     tex.needsUpdate = true;
     return tex;
   }, [texture]);
+  
+  const geometry = React.useMemo(() => new THREE.SphereGeometry(1, 48, 48), []);
   useFrame((_, delta) => {
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.5; // Rotating right to left on Y axis (slower)
@@ -21,8 +23,7 @@ function EarthSphere() {
   });
 
   return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[1, 64, 64]} />
+    <mesh ref={meshRef} geometry={geometry}>
       <meshStandardMaterial map={cloudyTexture} roughness={0.65} metalness={0.05} />
     </mesh>
   );
@@ -33,7 +34,7 @@ export default function HeroEarth() {
     <Canvas
       dpr={[1, 1.5]}
       camera={{ position: [0, 0, 3.2], fov: 38.5, near: 0.1, far: 100 }}
-      gl={{ alpha: true, antialias: true }}
+      gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
       style={{ background: 'transparent', width: '100%', height: '100%', display: 'block' }}
       onCreated={({ gl }) => {
         gl.setClearColor(new THREE.Color(0x000000), 0);

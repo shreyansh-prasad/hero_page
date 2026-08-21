@@ -158,6 +158,7 @@ export default function LiquidGlassNav() {
 
   useEffect(() => {
     const mqPointer = window.matchMedia('(pointer: fine)');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsPointerFine(mqPointer.matches);
     const onPointerChange = (e: MediaQueryListEvent) => setIsPointerFine(e.matches);
     mqPointer.addEventListener('change', onPointerChange);
@@ -176,10 +177,12 @@ export default function LiquidGlassNav() {
   // Track active section based on pathname and scroll
   useEffect(() => {
     if (pathname === '/timeline') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveSection('timeline');
       return;
     }
     if (pathname === '/schedule') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveSection('schedule');
       return;
     }

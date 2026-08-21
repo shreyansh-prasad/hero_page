@@ -1,14 +1,21 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import HeroBackground from '@/components/hero/HeroBackground';
-import HudLayer from '@/components/hero/HudLayer';
 import HeroBorder from '@/components/hero/HeroBorder';
 import AboutSection from '@/components/about/AboutSection';
-import HeroEarth from '@/components/hero/HeroEarth';
 import { usePointerTracker } from '@/hooks/usePointerTracker';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useScrollEarth } from '@/hooks/useScrollEarth';
+
+const HeroEarth = dynamic(() => import('@/components/hero/HeroEarth'), {
+  ssr: false,
+});
+
+const HudLayer = dynamic(() => import('@/components/hero/HudLayer'), {
+  ssr: false,
+});
 
 export default function Home() {
   const reducedMotion = useReducedMotion();
@@ -107,7 +114,7 @@ export default function Home() {
       </div>
 
       {/* ── About Shunya section (100vh, seamless continuation) ── */}
-      <AboutSection />
+      <AboutSection key="about-section-fixed" />
     </main>
   );
 }

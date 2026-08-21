@@ -24,6 +24,7 @@ const ScrambledText: React.FC<ScrambledTextProps> = ({
 }) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const charsRef = useRef<HTMLElement[]>([]);
+  // eslint-disable-next-line react-hooks/refs
   charsRef.current = []; // Clear refs on render
 
   useEffect(() => {

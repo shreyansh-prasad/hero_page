@@ -84,7 +84,8 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
               alt="Nebula"
               fill
               className="object-cover opacity-70 animate-breathe"
-              unoptimized
+              sizes="100vw"
+              priority
             />
           </div>
         </div>
@@ -172,7 +173,8 @@ export default function HeroBackground({ hudRef }: HeroBackgroundProps) {
             alt="SHUNYA"
             fill
             className="object-contain object-center"
-            unoptimized
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
           />
         </div>
 

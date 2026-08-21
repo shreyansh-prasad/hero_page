@@ -6,7 +6,7 @@ import LiquidGlassNav from "../components/navigation/LiquidGlassNav";
 const corpta = localFont({
   src: "../public/fonts/Corpta.ttf.otf",
   variable: "--font-corpta",
-  preload: false,
+  preload: true,
 });
 
 export const metadata: Metadata = {
