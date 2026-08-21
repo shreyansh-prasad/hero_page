@@ -1,0 +1,107 @@
+/**
+ * StaticFallback — Accessible alternative for prefers-reduced-motion: reduce.
+ *
+ * When the user's OS settings request reduced motion, this replaces the entire
+ * kinetic engine with a clean CSS grid of all 6 competitions.
+ * No animations, no GSAP, no transforms — just readable content.
+ */
+
+import { EVENTS } from "@/lib/events";
+
+export default function StaticFallback() {
+  return (
+    <div className="static-fallback">
+      <div style={{ marginBottom: "48px" }}>
+        <h1
+          style={{
+            fontFamily: "var(--font-sans), 'Space Grotesk', sans-serif",
+            fontSize: "48px",
+            fontWeight: 700,
+            letterSpacing: "-0.04em",
+            textTransform: "uppercase",
+            color: "#ffffff",
+          }}
+        >
+          Event Timeline
+          <sup
+            style={{
+              fontSize: "16px",
+              color: "rgba(255,255,255,0.4)",
+              verticalAlign: "super",
+            }}
+          >
+            (06)
+          </sup>
+        </h1>
+        <p
+          style={{
+            fontFamily: "var(--font-mono), 'JetBrains Mono', monospace",
+            fontSize: "13px",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.35)",
+            marginTop: "12px",
+          }}
+        >
+          Shunya · GDG On Campus
+        </p>
+      </div>
+
+      <div className="static-grid">
+        {EVENTS.map((event) => (
+          <div
+            key={event.id}
+            className="static-card"
+            style={{ "--card-accent": event.accent }}
+          >
+            <p
+              style={{
+                fontFamily: "var(--font-mono), monospace",
+                fontSize: "11px",
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: event.accent,
+                marginBottom: "12px",
+              }}
+            >
+              {event.tag}
+            </p>
+            <h2
+              style={{
+                fontFamily: "var(--font-sans), sans-serif",
+                fontSize: "24px",
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+                textTransform: "uppercase",
+                marginBottom: "12px",
+              }}
+            >
+              {event.title}
+            </h2>
+            <p
+              style={{
+                fontFamily: "var(--font-sans), sans-serif",
+                fontSize: "14px",
+                lineHeight: 1.6,
+                color: "rgba(255,255,255,0.6)",
+              }}
+            >
+              {event.description}
+            </p>
+            <p
+              style={{
+                fontFamily: "var(--font-mono), monospace",
+                fontSize: "11px",
+                letterSpacing: "0.04em",
+                color: "rgba(255,255,255,0.25)",
+                marginTop: "16px",
+              }}
+            >
+              {event.date}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

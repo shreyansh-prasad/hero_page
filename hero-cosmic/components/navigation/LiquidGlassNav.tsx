@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 /* ── Section registry ── */
 const SECTIONS = [
@@ -131,7 +132,7 @@ const navLinkBase: React.CSSProperties = {
   cursor: 'pointer',
   fontFamily: FONT,
   borderRadius: '999px',
-  transition: 'color 150ms ease, background 150ms ease',
+  transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
   lineHeight: 1,
   flexShrink: 0,
 };
@@ -143,6 +144,8 @@ const navLinkHover: React.CSSProperties = {
 
 /* ── Component ── */
 export default function LiquidGlassNav() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [activeSection, setActiveSection] = useState<SectionId>('home');
   const [inAbout, setInAbout] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -170,38 +173,64 @@ export default function LiquidGlassNav() {
     };
   }, []);
 
-  /* ── IntersectionObserver: track which section is active ── */
+  // Track active section based on pathname and scroll
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-
-    SECTIONS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setActiveSection(id as SectionId);
-          }
-        },
-        { threshold: 0.4 }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-
-    // Also observe the 'about' section specifically for the logo text change
-    const aboutEl = document.getElementById('about');
-    if (aboutEl) {
-      const aboutObs = new IntersectionObserver(([entry]) => {
-        setInAbout(entry.isIntersecting);
-      }, { threshold: 0.3 });
-      aboutObs.observe(aboutEl);
-      observers.push(aboutObs);
+    if (pathname === '/timeline') {
+      setActiveSection('timeline');
+      return;
     }
+    if (pathname === '/schedule') {
+      setActiveSection('schedule');
+      return;
+    }
+    if (pathname === '/') {
+      const handleScroll = () => {
+        const aboutEl = document.getElementById('about-team');
+        if (aboutEl) {
+          const rect = aboutEl.getBoundingClientRect();
+          if (rect.top <= window.innerHeight / 2) {
+            setActiveSection('about-team');
+            setInAbout(true);
+            return;
+          }
+        }
+        setActiveSection('home');
+        setInAbout(false);
+      };
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll();
+      return () => window.removeEventListener('scroll', handleScroll);
+    }
+  }, [pathname]);
 
-    return () => observers.forEach((o) => o.disconnect());
-  }, []);
+  const handleNav = (id: SectionId) => {
+    setActiveSection(id);
+    if (id === 'timeline') {
+      router.push('/timeline');
+      setExpanded(false);
+      return;
+    }
+    if (id === 'schedule') {
+      router.push('/schedule');
+      setExpanded(false);
+      return;
+    }
+    if (id === 'home') {
+      if (pathname !== '/') router.push('/');
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
+      setExpanded(false);
+      return;
+    }
+    if (id === 'about-team') {
+      if (pathname !== '/') {
+        router.push('/#about-team');
+      } else {
+        const el = document.getElementById('about-team');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+      setExpanded(false);
+    }
+  };
 
   /* ── Collapse on outside click / tap ── */
   const handleOutsideClick = useCallback(
@@ -238,13 +267,6 @@ export default function LiquidGlassNav() {
       e.stopPropagation();
       setExpanded((v) => !v);
     }
-  };
-
-  /* ── Navigate and collapse ── */
-  const navigate = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-    setExpanded(false);
   };
 
   const activeLabelText = SECTIONS.find((s) => s.id === activeSection)?.label ?? 'Home';
@@ -347,11 +369,11 @@ export default function LiquidGlassNav() {
         {/* Logo / Home link */}
         <div
           style={dynamicLogoBlock}
-          onClick={() => navigate('home')}
+          onClick={() => handleNav('home')}
           role="link"
           aria-label="Home"
           tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && navigate('home')}
+          onKeyDown={(e) => e.key === 'Enter' && handleNav('home')}
         >
           <span style={{ ...dynamicLogoText, display: 'flex', alignItems: 'center', willChange: 'width' }}>
             <span
@@ -384,8 +406,13 @@ export default function LiquidGlassNav() {
               key={s.id}
               style={{
                 ...navLinkBase,
-                ...(hoveredLink === s.id && !isMobile ? navLinkHover : {}),
-                ...(activeSection === s.id && isMobile ? { color: '#ffffff', background: 'rgba(255,255,255,0.04)' } : {}),
+                ...(activeSection === s.id 
+                  ? { 
+                      color: '#ffffff', 
+                      background: isMobile ? 'rgba(255,255,255,0.08)' : 'transparent',
+                      textShadow: '0 0 16px rgba(255, 255, 255, 0.6), 0 0 32px rgba(96, 165, 250, 0.4)'
+                    } 
+                  : (hoveredLink === s.id && !isMobile ? navLinkHover : {})),
                 width: isMobile ? '100%' : 'auto',
                 padding: isMobile ? '16px 20px' : navLinkBase.padding,
                 borderRadius: isMobile ? '16px' : navLinkBase.borderRadius,
@@ -394,7 +421,7 @@ export default function LiquidGlassNav() {
               }}
               onMouseEnter={() => !isMobile && setHoveredLink(s.id)}
               onMouseLeave={() => !isMobile && setHoveredLink(null)}
-              onClick={() => navigate(s.id)}
+              onClick={() => handleNav(s.id)}
               tabIndex={0}
             >
               {s.label}
